@@ -5,3 +5,4 @@ dist
 # Source assets not used by the app
 Gemini_Generated_Image_*
 inspiracion webapp/
+*.tsbuildinfo
