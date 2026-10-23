@@ -1,0 +1,7 @@
+node_modules
+dist
+*.log
+.DS_Store
+# Source assets not used by the app
+Gemini_Generated_Image_*
+inspiracion webapp/
