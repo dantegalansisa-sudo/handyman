@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useMotionValue, useTransform, animate, type PanInfo } from 'framer-motion'
-import { ArrowRight, Check, ChevronsRight, ClipboardList, Clock, House, LayoutGrid, MoveHorizontal, ShoppingBag, Star, User, X } from 'lucide-react'
+import { ArrowRight, Check, ChevronsRight, ClipboardList, Clock, House, LayoutGrid, MoveHorizontal, ShieldCheck, ShoppingBag, Star, User, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { CATEGORIES, IMG, STR, type Service } from '../data'
 import { money, useApp, type Tab } from '../store'
@@ -258,9 +258,39 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
   return (
     <motion.div className="onb" exit={{ opacity: 0, transition: { duration: 0.5, ease } }}>
       <motion.div className="onb-inner" exit={{ scale: 1.04, transition: { duration: 0.5, ease } }}>
-        <motion.div className="onb-photo" initial={{ scale: 1.2, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.4, ease }}>
-          <img src={IMG.hero} alt="Torres Handyman professional" />
-        </motion.div>
+        <div className="onb-stage">
+          {/* soft gold sun + rings behind the pro */}
+          <motion.div className="onb-sun" initial={{ scale: 0.4, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.4, ease }} />
+          <motion.div className="onb-ring" initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1, rotate: 360 }}
+            transition={{ scale: { duration: 1.4, ease, delay: 0.1 }, opacity: { duration: 1, delay: 0.1 }, rotate: { duration: 60, repeat: Infinity, ease: 'linear' } }} />
+          <motion.div className="onb-ring onb-ring-2" initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.6, ease, delay: 0.2 }} />
+          <motion.div className="onb-watermark" initial={{ x: -60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 1.4, ease, delay: 0.15 }}>
+            TORRES
+          </motion.div>
+
+          <motion.picture className="onb-pro" initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1.2, ease, delay: 0.2 }}>
+            <motion.img
+              srcSet="/hero-sm.webp 543w, /hero.webp 1086w"
+              sizes="(max-width: 440px) 100vw, 440px"
+              src="/hero.webp"
+              alt="Torres Handyman professional"
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
+            />
+          </motion.picture>
+
+          {[
+            { k: 'r', cls: 'c1', d: 0.9, icon: <Star size={13} fill="#B08A35" strokeWidth={0} />, text: t({ en: '4.9 · 500+ reviews', es: '4.9 · +500 reseñas' }) },
+            { k: 's', cls: 'c2', d: 1.05, icon: <ShieldCheck size={14} color="#B08A35" />, text: t({ en: 'Licensed & insured', es: 'Licenciados y asegurados' }) },
+            { k: 'c', cls: 'c3', d: 1.2, icon: <Clock size={14} color="#B08A35" />, text: t({ en: 'Same-week visits', es: 'Citas esta semana' }) },
+          ].map((c, i) => (
+            <motion.div key={c.k} className={`onb-chip ${c.cls}`} initial={{ opacity: 0, scale: 0.6, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 18, delay: c.d }}>
+              <motion.span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} animate={{ y: [0, i % 2 ? 5 : -5, 0] }} transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut', delay: 1.6 + i * 0.3 }}>
+                {c.icon} {c.text}
+              </motion.span>
+            </motion.div>
+          ))}
+        </div>
 
         <div style={{ position: 'absolute', top: 18, left: 20, right: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <motion.div className="pill" style={{ height: 44, padding: '0 14px 0 6px', gap: 8 }} initial={{ y: -30, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.4, duration: 0.7, ease }}>
@@ -272,8 +302,8 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
         </div>
 
         <div className="onb-body">
-          <motion.div className="rating-pill" style={{ marginBottom: 16, boxShadow: 'var(--shadow)' }} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.9, duration: 0.6, ease }}>
-            <Star size={13} fill="#B08A35" strokeWidth={0} /> {t(STR.rated)}
+          <motion.div className="onb-kicker" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45, duration: 0.6, ease }}>
+            <span /> {t(STR.tagline)}
           </motion.div>
           <h1 className="h1" style={{ fontSize: 42 }}>
             <MaskLine delay={0.5}>{t(STR.onbTitle1)}</MaskLine>

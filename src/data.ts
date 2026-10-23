@@ -14,7 +14,7 @@ const u = (id: string, w = 800, h = 600) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&q=75&auto=format`
 
 export const IMG = {
-  hero: u('1709675155252-f00141380412', 900, 1200),
+  hero: '/hero.webp',
   pro: u('1743130940714-91b221fa49ec', 800, 900),
   pro2: u('1732395805034-e0bf859665e5', 800, 900),
   toolbelt: u('1595844730298-b960ff98fee0', 800, 1000),

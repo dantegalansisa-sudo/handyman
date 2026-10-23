@@ -355,10 +355,38 @@ textarea.input { height: 96px; padding: 14px 18px; resize: none; }
 
 /* ---------- Onboarding ---------- */
 .onb { position: fixed; inset: 0; z-index: 100; display: flex; justify-content: center; background: var(--bg); }
-.onb-inner { position: relative; width: 100%; max-width: 440px; height: 100dvh; overflow: hidden; background: linear-gradient(180deg, #f8f2dd 0%, #f6f3ea 100%); }
-.onb-photo { position: absolute; left: 0; right: 0; top: 0; height: 66%; overflow: hidden; }
-.onb-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
-.onb-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 45%, #f7f3e6 98%); }
+.onb-inner { position: relative; width: 100%; max-width: 440px; height: 100dvh; overflow: hidden;
+  background:
+    radial-gradient(90% 55% at 78% 30%, #f1dfab 0%, rgba(241,223,171,0) 70%),
+    linear-gradient(180deg, #f8f1da 0%, #f6f3ea 70%); }
+.onb-stage { position: absolute; left: 0; right: 0; top: 0; height: 64%; }
+.onb-sun { position: absolute; width: min(330px, 41dvh); height: min(330px, 41dvh); right: -60px; top: 9%; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #f3dc9c 0%, #e2c272 55%, #d2ad57 100%);
+  box-shadow: 0 30px 80px -20px rgba(176,138,53,.55), inset 0 -20px 60px rgba(150,110,30,.25); }
+.onb-ring { position: absolute; width: 410px; height: 410px; right: -100px; top: 30px; border-radius: 50%; border: 1.5px dashed rgba(176,138,53,.45); }
+.onb-ring-2 { width: 250px; height: 250px; right: auto; left: -110px; top: 210px; border: 1px solid rgba(176,138,53,.28); }
+.onb-watermark { position: absolute; left: 14px; top: 78px; font-size: 92px; line-height: .9; font-weight: 800; letter-spacing: -0.05em;
+  color: transparent; -webkit-text-stroke: 1.2px rgba(176,138,53,.24); writing-mode: vertical-rl; transform-origin: left top; }
+.onb-pro { position: absolute; right: 0; bottom: 0; height: calc(100% - 64px); display: block; }
+.onb-pro img { height: 100%; width: auto; max-width: none; margin-left: auto;
+  filter: drop-shadow(0 30px 40px rgba(60,40,10,.25));
+  -webkit-mask-image: linear-gradient(to bottom, #000 72%, transparent 99%); mask-image: linear-gradient(to bottom, #000 72%, transparent 99%); }
+.onb-chip { position: absolute; z-index: 3; display: inline-flex; align-items: center; height: 38px; padding: 0 14px; border-radius: 999px;
+  background: rgba(255,255,255,.82); backdrop-filter: blur(12px) saturate(1.4); -webkit-backdrop-filter: blur(12px) saturate(1.4);
+  border: 1px solid rgba(255,255,255,.9); box-shadow: 0 14px 30px -14px rgba(60,40,10,.45); font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.onb-chip.c1 { left: 16px; top: 34%; }
+.onb-chip.c2 { right: 14px; top: 56%; }
+.onb-chip.c3 { left: 14px; top: 74%; }
+.onb-kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; font-size: 11.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--gold); }
+@media (max-height: 720px) {
+  .onb-stage { height: 57%; }
+  .onb-chip.c3, .onb-watermark { display: none; }
+  .onb-chip.c1 { top: 30%; }
+  .onb-chip.c2 { top: 62%; }
+  .onb-body .h1 { font-size: 36px !important; }
+  .onb-kicker { margin-bottom: 10px; }
+}
+.onb-kicker span { width: 26px; height: 2px; border-radius: 2px; background: var(--gold); }
 .onb-body { position: absolute; left: 0; right: 0; bottom: 0; padding: 0 24px calc(28px + var(--safe-b)); }
 .swipe { position: relative; height: 66px; border-radius: 999px; background: var(--dark); color: #fff; padding: 6px; display: flex; align-items: center; overflow: hidden; }
 .swipe-knob { position: relative; z-index: 2; width: 54px; height: 54px; border-radius: 99px; background: var(--gold); display: grid; place-items: center; cursor: grab; touch-action: none; }
@@ -396,3 +424,4 @@ textarea.input { height: 96px; padding: 14px 18px; resize: none; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+@media (max-width: 360px) { .onb-kicker { display: none; } }
