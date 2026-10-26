@@ -1,14 +1,18 @@
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, BadgeCheck, ChevronDown, Clock, HandCoins, MapPin, MessageCircle, Phone, Search, ShieldCheck, ShoppingBag, Sparkles, Star, X } from 'lucide-react'
+import { ArrowRight, BadgeDollarSign, ChevronDown, MapPin, MessageCircle, Phone, Search, ShoppingBag, Truck, Users, Wallet, X } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
-import { BUSINESS, CATEGORIES, FAQ, IMG, REVIEWS, SERVICES, STR, type CategoryId } from '../data'
+import { BUSINESS, CATEGORIES, FAQ, IMG, MIN_SERVICE, PICKUP_STORES, SERVICES, STR, UNIT, type CategoryId } from '../data'
 import { money, useApp } from '../store'
+import { track } from '../track'
 import { BeforeAfter, ServiceRow } from '../components/parts'
-import { CAT_ICON, CountUp, Img, Logo, MaskLine, Reveal, Stars, ease } from '../components/ui'
+import { CAT_ICON, CountUp, Img, Logo, MaskLine, Reveal, ease } from '../components/ui'
 
 export function waLink(text: string) {
   return `https://wa.me/${BUSINESS.whatsapp}?text=${encodeURIComponent(text)}`
 }
+
+export const quoteMsg = (lang: 'en' | 'es') =>
+  lang === 'es' ? 'Hola Torres Contractor Solution, quiero una cotización. Les envío foto.' : 'Hi Torres Contractor Solution, I’d like a quote. Sending a photo.'
 
 export default function Home() {
   const { t, go, count, openSheet, lang } = useApp()
@@ -35,11 +39,11 @@ export default function Home() {
           <Logo size={42} />
           <div>
             <div className="xs muted" style={{ fontWeight: 600 }}>{t(STR.hello)}</div>
-            <div style={{ fontWeight: 800, fontSize: 15.5, letterSpacing: '-0.01em' }}>Torres Handyman</div>
+            <div style={{ fontWeight: 800, fontSize: 14.5, letterSpacing: '-0.01em' }}>Torres Contractor Solution</div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
-          <a className="icon-btn" href={BUSINESS.phoneHref} aria-label="Call"><Phone size={18} /></a>
+          <a className="icon-btn" href={BUSINESS.phoneHref} onClick={() => track('call_click', { from: 'header' })} aria-label="Call"><Phone size={18} /></a>
           <motion.button whileTap={{ scale: 0.9 }} className="icon-btn" onClick={() => go('cart')} aria-label="Estimate">
             <ShoppingBag size={18} />
             {count > 0 && <span className="badge">{count}</span>}
@@ -67,7 +71,12 @@ export default function Home() {
               <div className="small muted" style={{ marginBottom: 10, fontWeight: 600 }}>{results.length} {t(STR.results)}</div>
               <div style={{ display: 'grid', gap: 10 }}>
                 {results.map((s, i) => <ServiceRow key={s.id} s={s} i={i} />)}
-                {!results.length && <div className="card" style={{ padding: 24, textAlign: 'center' }}>{t(STR.noResults)}</div>}
+                {!results.length && (
+                  <div className="card" style={{ padding: 24, textAlign: 'center' }}>
+                    {t(STR.noResults)}
+                    <a className="btn gold sm" style={{ marginTop: 14 }} href={waLink(quoteMsg(lang))} target="_blank" rel="noreferrer" onClick={() => track('whatsapp_click', { from: 'search' })}><MessageCircle size={15} /> WhatsApp</a>
+                  </div>
+                )}
               </div>
             </motion.div>
           ) : (
@@ -89,12 +98,11 @@ export default function Home() {
               {/* Promo card */}
               <motion.div ref={promoRef} className="promo" style={{ marginTop: 18 }} initial={{ opacity: 0, y: 30, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.45, duration: 0.9, ease }}>
                 <motion.img className="ph" src={IMG.pro} alt="" style={{ y: promoY, scale: promoScale }} />
-                <div style={{ position: 'relative', display: 'flex', justifyContent: 'space-between' }}>
-                  <span className="pill"><Sparkles size={13} color="#B08A35" /> {t(STR.promoTag)}</span>
-                  <span className="rating-pill"><Star size={12} fill="#B08A35" strokeWidth={0} /> 4.9</span>
+                <div style={{ position: 'relative' }}>
+                  <span className="pill"><BadgeDollarSign size={14} color="#B08A35" /> {t(STR.promoTag)}</span>
                 </div>
-                <div style={{ position: 'relative', marginTop: 'auto', maxWidth: '58%' }}>
-                  <div className="h2" style={{ fontSize: 23 }}>{t(STR.promoTitle)}</div>
+                <div style={{ position: 'relative', marginTop: 'auto', maxWidth: '60%' }}>
+                  <div className="h2" style={{ fontSize: 21 }}>{t(STR.promoTitle)}</div>
                   <motion.button className="btn" style={{ marginTop: 16, height: 50, paddingRight: 20 }} whileTap={{ scale: 0.95 }} onClick={() => go('services', 'all')}>
                     {t(STR.bookNow)}
                     <span className="btn-arrow" style={{ width: 34, height: 34, marginRight: -10 }}><ArrowRight size={16} /></span>
@@ -133,12 +141,14 @@ export default function Home() {
                       >
                         <div className="pop-img">
                           <Img src={s.img} alt={t(s.name)} />
-                          <span className="rating-pill"><Star size={11} fill="#B08A35" strokeWidth={0} /> {s.rating}</span>
                         </div>
                         <div style={{ padding: '10px 6px 4px' }}>
                           <div className="h3" style={{ fontSize: 14.5, minHeight: 36 }}>{t(s.name)}</div>
                           <div className="row" style={{ marginTop: 8 }}>
-                            <div className="price" style={{ fontSize: 17 }}><span className="xs muted" style={{ fontWeight: 600, marginRight: 3 }}>{t(STR.from)}</span>{money(s.price)}</div>
+                            <div className="price" style={{ fontSize: 17 }}>
+                              {money(s.price)}
+                              {s.kind !== 'each' && <small>{t(UNIT[s.kind].per)}</small>}
+                            </div>
                             <span className="icon-btn dark" style={{ width: 34, height: 34 }}><ArrowRight size={15} /></span>
                           </div>
                         </div>
@@ -161,7 +171,7 @@ export default function Home() {
                     </Reveal>
                   ))}
                   <Reveal i={7}>
-                    <a className="cat" href={waLink(lang === 'es' ? 'Hola Torres Handyman, necesito una cotización.' : 'Hi Torres Handyman, I need a quote.')} target="_blank" rel="noreferrer">
+                    <a className="cat" href={waLink(quoteMsg(lang))} target="_blank" rel="noreferrer" onClick={() => track('whatsapp_click', { from: 'categories' })}>
                       <span className="cat-ico" style={{ background: '#141414', color: '#fff' }}><MessageCircle size={26} strokeWidth={1.8} /></span>
                       {lang === 'es' ? 'Otro' : 'Other'}
                     </a>
@@ -169,12 +179,12 @@ export default function Home() {
                 </div>
               </section>
 
-              {/* Stats */}
+              {/* Stats — all real numbers from the catalog */}
               <Reveal className="sec">
                 <div className="stats">
-                  <div className="stat"><b><CountUp to={1200} suffix="+" /></b><span>{t(STR.jobs)}</span></div>
-                  <div className="stat"><b><CountUp to={10} suffix="+" /></b><span>{t(STR.years)}</span></div>
-                  <div className="stat"><b><CountUp to={4.9} decimals={1} /></b><span>{t(STR.rating)}</span></div>
+                  <div className="stat"><b><CountUp to={SERVICES.length} suffix="+" /></b><span>{t(STR.services_n)}</span></div>
+                  <div className="stat"><b><CountUp to={CATEGORIES.length} /></b><span>{t(STR.trades_n)}</span></div>
+                  <div className="stat"><b>$<CountUp to={MIN_SERVICE} /></b><span>{t(STR.min_n)}</span></div>
                 </div>
               </Reveal>
 
@@ -198,7 +208,6 @@ export default function Home() {
                 </div>
               </section>
 
-              {/* Feature image */}
               <ParallaxFeature />
 
               {/* Why */}
@@ -206,7 +215,7 @@ export default function Home() {
                 <div className="sec-head"><h2 className="h2"><MaskLine inView>{t(STR.whyTitle)}</MaskLine></h2></div>
                 <div className="why">
                   {STR.why.map((w, i) => {
-                    const Icon = [HandCoins, ShieldCheck, Clock, BadgeCheck][i]
+                    const Icon = [BadgeDollarSign, Users, Truck, Wallet][i]
                     return (
                       <Reveal key={i} i={i}>
                         <div className="card" style={{ height: '100%' }}>
@@ -220,6 +229,9 @@ export default function Home() {
                 </div>
               </section>
 
+              {/* Store pickup */}
+              <PickupBanner />
+
               {/* Before after */}
               <section className="sec">
                 <div className="sec-head" style={{ display: 'block' }}>
@@ -227,28 +239,6 @@ export default function Home() {
                   <div className="small muted" style={{ marginTop: 4 }}>{t(STR.beforeAfterSub)}</div>
                 </div>
                 <Reveal><BeforeAfter /></Reveal>
-              </section>
-
-              {/* Reviews */}
-              <section className="sec">
-                <div className="sec-head"><h2 className="h2"><MaskLine inView>{t(STR.reviews)}</MaskLine></h2>
-                  <span className="rating-pill" style={{ border: '1px solid var(--line)' }}><Star size={12} fill="#B08A35" strokeWidth={0} /> 4.9 · 500+</span>
-                </div>
-                <div className="hscroll">
-                  {REVIEWS.map((r, i) => (
-                    <motion.div key={i} className="card review" initial={{ opacity: 0, x: 40 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6, ease, delay: i * 0.08 }}>
-                      <Stars />
-                      <p style={{ margin: '12px 0 16px', fontSize: 14.5, lineHeight: 1.5 }}>“{t(r.text)}”</p>
-                      <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                        <span className="avatar">{r.name[0]}</span>
-                        <div>
-                          <div className="small" style={{ fontWeight: 700 }}>{r.name}</div>
-                          <div className="xs muted">{r.city} · {t(r.job)}</div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
               </section>
 
               {/* FAQ */}
@@ -264,26 +254,45 @@ export default function Home() {
                   <div className="h2" style={{ fontSize: 24, maxWidth: 260 }}>{t(STR.ctaTitle)}</div>
                   <p style={{ color: '#d6d0c2', fontSize: 14, lineHeight: 1.5, margin: '8px 0 18px', maxWidth: 280 }}>{t(STR.ctaSub)}</p>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <a className="btn gold" style={{ flex: 1, height: 50 }} href={waLink(lang === 'es' ? 'Hola Torres Handyman, quiero una cotización. Les envío foto.' : 'Hi Torres Handyman, I’d like a quote. Sending a photo.')} target="_blank" rel="noreferrer">
+                    <a className="btn gold" style={{ flex: 1, height: 50 }} href={waLink(quoteMsg(lang))} target="_blank" rel="noreferrer" onClick={() => track('whatsapp_click', { from: 'cta' })}>
                       <MessageCircle size={18} /> WhatsApp
                     </a>
-                    <a className="btn" style={{ background: '#fff', color: '#141414', height: 50 }} href={BUSINESS.phoneHref}><Phone size={18} /> {t(STR.call)}</a>
+                    <a className="btn" style={{ background: '#fff', color: '#141414', height: 50 }} href={BUSINESS.phoneHref} onClick={() => track('call_click', { from: 'cta' })}><Phone size={18} /> {t(STR.call)}</a>
                   </div>
                 </div>
               </Reveal>
 
               <footer style={{ textAlign: 'center', marginTop: 36 }}>
                 <Logo size={44} />
-                <div className="small" style={{ fontWeight: 800, letterSpacing: '0.14em', marginTop: 8 }}>TORRES HANDYMAN</div>
-                <div className="xs muted" style={{ letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 4 }}>{t(STR.tagline)}</div>
+                <div className="small" style={{ fontWeight: 800, letterSpacing: '0.12em', marginTop: 8 }}>TORRES CONTRACTOR SOLUTION</div>
+                <div className="xs muted" style={{ letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 4 }}>{t(BUSINESS.tagline)}</div>
                 <div className="xs muted" style={{ marginTop: 12, display: 'inline-flex', gap: 6, alignItems: 'center' }}><MapPin size={12} /> {t(BUSINESS.area)}</div>
-                <div className="xs muted" style={{ marginTop: 4 }}>© {new Date().getFullYear()} Torres Handyman · {BUSINESS.phone}</div>
+                <div className="xs muted" style={{ marginTop: 4 }}>© {new Date().getFullYear()} Torres Contractor Solution · {BUSINESS.phone}</div>
+                <div className="xs muted" style={{ marginTop: 4 }}>{t({ en: 'All prices are base prices.', es: 'Todos los precios son precios base.' })}</div>
               </footer>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
     </div>
+  )
+}
+
+function PickupBanner() {
+  const { t, openSheet } = useApp()
+  const pickup = SERVICES.find((s) => s.id === 'pickup')!
+  return (
+    <Reveal className="sec">
+      <motion.button className="card" whileTap={{ scale: 0.98 }} onClick={() => openSheet(pickup)}
+        style={{ width: '100%', textAlign: 'left', padding: 18, display: 'flex', gap: 14, alignItems: 'center', background: 'linear-gradient(135deg,#f7efd4,#efe3bd)', border: 0 }}>
+        <span className="why-ico" style={{ margin: 0, width: 52, height: 52, borderRadius: 16, background: '#141414', color: '#D8BB6E', flex: 'none' }}><Truck size={24} /></span>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div className="h3">{t({ en: 'We pick up your order', es: 'Recogemos tu pedido' })}</div>
+          <div className="xs muted" style={{ marginTop: 3, lineHeight: 1.4 }}>{PICKUP_STORES.join(' · ')}</div>
+        </div>
+        <div className="price" style={{ fontSize: 18, textAlign: 'right' }}>$3<small style={{ display: 'block', marginLeft: 0 }}>{t(UNIT.mile.per)}</small></div>
+      </motion.button>
+    </Reveal>
   )
 }
 
@@ -300,7 +309,7 @@ function ParallaxFeature() {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(10,10,10,.75), transparent 60%)' }} />
         <div style={{ position: 'absolute', left: 20, right: 20, bottom: 20, color: '#fff' }}>
           <div className="h2" style={{ fontSize: 24 }}>{t({ en: 'Love your home again.', es: 'Vuelve a amar tu hogar.' })}</div>
-          <div className="small" style={{ color: '#ddd6c6', marginTop: 6 }}>{t({ en: 'From a dripping faucet to a full room refresh.', es: 'Desde una llave que gotea hasta renovar un cuarto completo.' })}</div>
+          <div className="small" style={{ color: '#ddd6c6', marginTop: 6 }}>{t({ en: 'From a new faucet to tile, paint and roof sealing.', es: 'Desde una mezcladora nueva hasta losas, pintura y sellado de techo.' })}</div>
           <motion.button className="btn" whileTap={{ scale: 0.95 }} onClick={() => go('services', 'all')} style={{ background: '#fff', color: '#141414', height: 46, marginTop: 14 }}>
             {t(STR.browse)} <ArrowRight size={16} />
           </motion.button>

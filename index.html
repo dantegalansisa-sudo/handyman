@@ -2,16 +2,21 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
-    <title>Torres Handyman — Home repairs, priced upfront</title>
-    <meta name="description" content="Book electrical, plumbing, PVC, concrete, painting, drywall and pressure washing services in minutes. Upfront prices, licensed pros. Call 939-496-4444." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Torres Contractor Solution | Plumbing, Electrical & Handyman in Puerto Rico</title>
+    <meta name="description" content="Plumbing, electrical, handyman, painting, tile, pressure washing, roof sealing, concrete and demolition in Puerto Rico. See base prices and request service in minutes. Call 939-496-4444." />
+    <meta name="keywords" content="handyman Puerto Rico, plomero Puerto Rico, electricista Puerto Rico, sellado de techo, lavado a presión, instalación de toilet, instalación de abanico, cargador carro eléctrico, contractor Puerto Rico" />
+    <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F6F3EA" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Torres" />
-    <meta property="og:title" content="Torres Handyman" />
-    <meta property="og:description" content="Your fast & reliable home repair solution. Pick your fixes, see the price, book in minutes." />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Torres Contractor Solution" />
+    <meta property="og:title" content="Torres Contractor Solution — Your fast & reliable solution" />
+    <meta property="og:description" content="Plumbing, electrical, handyman and more in Puerto Rico. See base prices and request service in minutes." />
     <meta property="og:image" content="/hero.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/icon.svg" />
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -20,9 +25,39 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
     <link rel="preload" as="image" href="/hero.webp" imagesrcset="/hero-sm.webp 543w, /hero.webp 1086w" imagesizes="(max-width: 440px) 100vw, 440px" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "HomeAndConstructionBusiness",
+        "name": "Torres Contractor Solution",
+        "slogan": "Tu solución rápida y confiable",
+        "telephone": "+1-939-496-4444",
+        "image": "/hero.webp",
+        "priceRange": "$$",
+        "areaServed": { "@type": "AdministrativeArea", "name": "Puerto Rico" },
+        "address": { "@type": "PostalAddress", "addressRegion": "PR", "addressCountry": "US" },
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Services",
+          "itemListElement": [
+            { "@type": "OfferCatalog", "name": "Plumbing" },
+            { "@type": "OfferCatalog", "name": "Electrical" },
+            { "@type": "OfferCatalog", "name": "Handyman" },
+            { "@type": "OfferCatalog", "name": "Painting" },
+            { "@type": "OfferCatalog", "name": "Tile" },
+            { "@type": "OfferCatalog", "name": "Pressure Washing & Roof Sealing" },
+            { "@type": "OfferCatalog", "name": "Concrete & Demolition" }
+          ]
+        }
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <h1>Torres Contractor Solution</h1>
+      <p>Plumbing, electrical, handyman, painting, tile, pressure washing, roof sealing, concrete and demolition in Puerto Rico. All prices are base prices. Minimum service $75. Call or WhatsApp 939-496-4444.</p>
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -425,3 +425,12 @@ textarea.input { height: 96px; padding: 14px 18px; resize: none; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
 @media (max-width: 360px) { .onb-kicker { display: none; } }
+
+/* ---------- Unit pricing ---------- */
+.svc-note { display: inline-flex; align-items: center; gap: 4px; margin-top: 6px; font-size: 11px; font-weight: 700; color: var(--gold); }
+.price .from { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0; }
+.qty-chip { height: 40px; padding: 0 14px; border-radius: 999px; background: var(--dark); color: #fff; font-weight: 700; font-size: 13px; white-space: nowrap; }
+.qty-chip.light { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+.measure { flex: 1; display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.measure input { width: 100%; min-width: 0; border: 0; outline: 0; background: none; font-size: 34px; font-weight: 800; letter-spacing: -0.03em; padding: 0; }
+.measure span { font-weight: 700; color: var(--muted); font-size: 15px; white-space: nowrap; }

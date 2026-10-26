@@ -1,8 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Calendar, Check, Clock, MapPin, MessageCircle, Phone, User, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { SLOTS, STR } from '../data'
-import { byId, money, useApp, type Booking } from '../store'
+import { MIN_SERVICE, SLOTS, STR } from '../data'
+import { byId, isMeasured, money, qtyLabel, useApp, type Booking } from '../store'
+import { track } from '../track'
 import { MaskLine, ease } from '../components/ui'
 import { waLink } from './Home'
 
@@ -13,7 +14,7 @@ function nextDays(n: number) {
   for (let i = 0; out.length < n; i++) {
     const x = new Date(d)
     x.setDate(d.getDate() + i)
-    if (x.getDay() !== 0) out.push(x) // closed Sundays
+    out.push(x)
   }
   return out
 }
@@ -21,21 +22,23 @@ function nextDays(n: number) {
 export function bookingMessage(b: Booking, lang: 'en' | 'es') {
   const lines = b.items.map((it) => {
     const s = byId(it.id)
-    return `• ${it.qty} × ${s.name[lang]} — ${money(s.price * it.qty)}`
+    const amount = isMeasured(s) ? qtyLabel(s, it.qty, lang) : `${it.qty} ×`
+    return `• ${amount} ${s.name[lang]} — ${money(Math.round(s.price * it.qty * 100) / 100)}`
   })
-  const head = lang === 'es' ? `Hola Torres Handyman 👋 Quiero reservar (#${b.id}):` : `Hi Torres Handyman 👋 I'd like to book (#${b.id}):`
+  const head = lang === 'es' ? `Hola Torres Contractor Solution 👋 Quiero solicitar un servicio (#${b.id}):` : `Hi Torres Contractor Solution 👋 I'd like to request a service (#${b.id}):`
   return [
     head,
     '',
     ...lines,
     '',
-    `${lang === 'es' ? 'Total estimado' : 'Estimated total'}: ${money(b.total)}`,
+    `${lang === 'es' ? 'Total estimado (precios base)' : 'Estimated total (base prices)'}: ${money(b.total)}`,
+    b.total <= MIN_SERVICE ? (lang === 'es' ? `(Servicio mínimo $${MIN_SERVICE})` : `(Minimum service $${MIN_SERVICE})`) : null,
     `${lang === 'es' ? 'Fecha' : 'Date'}: ${b.date} · ${b.slot}`,
     `${lang === 'es' ? 'Nombre' : 'Name'}: ${b.name}`,
     `${lang === 'es' ? 'Tel' : 'Phone'}: ${b.phone}`,
     `${lang === 'es' ? 'Dirección' : 'Address'}: ${b.address}`,
-    b.notes ? `${lang === 'es' ? 'Notas' : 'Notes'}: ${b.notes}` : '',
-  ].filter((l, i, a) => l !== '' || a[i - 1] !== '').join('\n')
+    b.notes ? `${lang === 'es' ? 'Notas' : 'Notes'}: ${b.notes}` : null,
+  ].filter((l) => l !== null).join('\n')
 }
 
 export default function Checkout() {
@@ -54,7 +57,7 @@ export default function Checkout() {
 }
 
 function Flow({ onClose }: { onClose: () => void }) {
-  const { t, lang, cart, total, addBooking, clearCart, go } = useApp()
+  const { t, lang, cart, total, minAdj, addBooking, clearCart, go } = useApp()
   const days = useMemo(() => nextDays(14), [])
   const [step, setStep] = useState(0)
   const [dir, setDir] = useState(1)
@@ -90,6 +93,7 @@ function Flow({ onClose }: { onClose: () => void }) {
       total,
     }
     addBooking(b)
+    track('booking_request', { value: total, currency: 'USD', items: b.items.length })
     clearCart()
     setDone(b)
   }
@@ -149,7 +153,7 @@ function Flow({ onClose }: { onClose: () => void }) {
               </div>
               <div className="card small" style={{ padding: 14, marginTop: 18, borderRadius: 18, display: 'flex', gap: 10, alignItems: 'center' }}>
                 <span className="incl-ico"><Check size={14} strokeWidth={3} /></span>
-                {t({ en: 'We’ll text you 30 min before arrival.', es: 'Te escribimos 30 min antes de llegar.' })}
+                {t({ en: 'We’ll confirm your quote and time on WhatsApp.', es: 'Te confirmamos el precio y la hora por WhatsApp.' })}
               </div>
             </>
           )}
@@ -190,11 +194,12 @@ function Flow({ onClose }: { onClose: () => void }) {
                   const s = byId(id)
                   return (
                     <div key={id} className="sum-row">
-                      <span><b>{qty}×</b> {t(s.name)}</span>
-                      <b>{money(s.price * qty)}</b>
+                      <span><b>{isMeasured(s) ? qtyLabel(s, qty, lang) : `${qty}×`}</b> {t(s.name)}</span>
+                      <b>{money(Math.round(s.price * qty * 100) / 100)}</b>
                     </div>
                   )
                 })}
+                {minAdj > 0 && <div className="sum-row"><span className="muted">{t(STR.minAdj)}</span><b>{money(minAdj)}</b></div>}
                 <div className="divider" />
                 <div className="row"><b>{t(STR.total)}</b><span className="price" style={{ fontSize: 24 }}>{money(total)}</span></div>
               </div>
@@ -252,10 +257,10 @@ function Success({ b, onClose }: { b: Booking; onClose: () => void }) {
         <div className="h3" style={{ marginTop: 10 }}>{b.date}</div>
         <div className="small muted">{b.slot}</div>
         <div className="divider" />
-        <div className="row"><span className="small muted">{b.items.reduce((a, x) => a + x.qty, 0)} {t(STR.items)}</span><span className="price">{money(b.total)}</span></div>
+        <div className="row"><span className="small muted">{b.items.length} {b.items.length === 1 ? t(STR.item) : t(STR.items)}</span><span className="price">{money(b.total)}</span></div>
       </motion.div>
       <motion.div style={{ width: '100%', marginTop: 'auto', paddingTop: 24, display: 'grid', gap: 10 }} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.85 }}>
-        <a className="btn gold block" style={{ height: 58 }} href={waLink(bookingMessage(b, lang))} target="_blank" rel="noreferrer"><MessageCircle size={18} /> {t(STR.sendWa)}</a>
+        <a className="btn gold block" style={{ height: 58 }} href={waLink(bookingMessage(b, lang))} target="_blank" rel="noreferrer" onClick={() => track('whatsapp_click', { from: 'booking_success' })}><MessageCircle size={18} /> {t(STR.sendWa)}</a>
         <button className="btn ghost block" onClick={onClose}>{t(STR.bookings)}</button>
       </motion.div>
     </div>

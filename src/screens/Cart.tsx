@@ -1,13 +1,14 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowLeft, ArrowRight, ShieldCheck, ShoppingBag, Sparkles, Trash2, Truck } from 'lucide-react'
-import { FREE_TRIP_OVER, IMG, STR } from '../data'
-import { byId, money, useApp } from '../store'
+import { ArrowLeft, ArrowRight, Info, ShieldCheck, Trash2 } from 'lucide-react'
+import { IMG, MIN_SERVICE, STR } from '../data'
+import { byId, isMeasured, money, priceLabel, qtyLabel, useApp } from '../store'
+import { track } from '../track'
 import { AnimatedNumber, Img, MaskLine, Stepper, ease } from '../components/ui'
 
 export default function Cart() {
-  const { t, go, cart, setQty, subtotal, trip, total, count, setCheckout, clearCart } = useApp()
+  const { t, lang, go, cart, setQty, subtotal, minAdj, total, count, setCheckout, clearCart, openSheet } = useApp()
   const entries = Object.entries(cart)
-  const pct = Math.min(100, (subtotal / FREE_TRIP_OVER) * 100)
+  const pct = Math.min(100, (subtotal / MIN_SERVICE) * 100)
 
   return (
     <div>
@@ -38,23 +39,23 @@ export default function Cart() {
                 <MaskLine delay={0.08}><span className="light">{t({ en: 'one simple', es: 'un solo' })} </span><span className="gold">{t({ en: 'visit.', es: 'viaje.' })}</span></MaskLine>
               </h1>
 
-              {/* Free visit meter */}
-              <motion.div className="card" style={{ padding: 16, marginTop: 18, borderRadius: 22 }} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.6, ease }}>
-                <div className="row small" style={{ fontWeight: 700 }}>
-                  <span style={{ display: 'inline-flex', gap: 8, alignItems: 'center' }}>
-                    {trip === 0 ? <Sparkles size={16} color="#B08A35" /> : <Truck size={16} />}
-                    {trip === 0
-                      ? t({ en: 'Your visit is FREE', es: 'Tu visita es GRATIS' })
-                      : `${t(STR.addMore)} ${money(FREE_TRIP_OVER - subtotal)} ${t(STR.forFree)}`}
-                  </span>
-                </div>
-                <div className="meter"><motion.div animate={{ width: `${pct}%` }} transition={{ duration: 0.8, ease }} /></div>
-              </motion.div>
+              {/* Minimum service meter */}
+              <AnimatePresence>
+                {minAdj > 0 && (
+                  <motion.div className="card" style={{ padding: 16, marginTop: 18, borderRadius: 22, overflow: 'hidden' }} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0, marginTop: 0, padding: 0 }} transition={{ duration: 0.5, ease }}>
+                    <div className="small" style={{ fontWeight: 700, display: 'flex', gap: 8, alignItems: 'center' }}>
+                      <Info size={16} color="#B08A35" /> {t(STR.minimumNote)} · {t({ en: 'add', es: 'agrega' })} {money(minAdj)} {t({ en: 'more at no extra cost', es: 'más sin costo extra' })}
+                    </div>
+                    <div className="meter"><motion.div animate={{ width: `${pct}%` }} transition={{ duration: 0.8, ease }} /></div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <div style={{ display: 'grid', gap: 10, marginTop: 14 }}>
                 <AnimatePresence initial={false}>
                   {entries.map(([id, qty], i) => {
                     const s = byId(id)
+                    const measured = isMeasured(s)
                     return (
                       <motion.div
                         key={id}
@@ -71,10 +72,14 @@ export default function Cart() {
                         <Img src={s.img} alt="" />
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div className="small" style={{ fontWeight: 700, lineHeight: 1.25 }}>{t(s.name)}</div>
-                          <div className="xs muted" style={{ marginTop: 2 }}>{money(s.price)} {t(s.unit)}</div>
-                          <div className="price" style={{ fontSize: 16, marginTop: 4 }}><AnimatedNumber value={s.price * qty} /></div>
+                          <div className="xs muted" style={{ marginTop: 2 }}>{measured ? `${qtyLabel(s, qty, lang)} × ` : ''}{priceLabel(s, lang)}</div>
+                          <div className="price" style={{ fontSize: 16, marginTop: 4 }}><AnimatedNumber value={Math.round(s.price * qty * 100) / 100} /></div>
                         </div>
-                        <Stepper light qty={qty} onChange={(n) => setQty(id, n)} />
+                        {measured ? (
+                          <button className="qty-chip light" onClick={() => openSheet(s)}>{t({ en: 'Edit', es: 'Editar' })}</button>
+                        ) : (
+                          <Stepper light qty={qty} onChange={(n) => setQty(id, n)} />
+                        )}
                       </motion.div>
                     )
                   })}
@@ -89,14 +94,13 @@ export default function Cart() {
               {/* Summary */}
               <motion.div className="card" style={{ padding: 20, marginTop: 14 }} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
                 <div className="sum-row"><span className="muted">{t(STR.subtotal)}</span><b><AnimatedNumber value={subtotal} /></b></div>
-                <div className="sum-row">
-                  <span className="muted">{t(STR.trip)}</span>
-                  <AnimatePresence mode="wait">
-                    <motion.b key={trip} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} style={{ color: trip === 0 ? 'var(--ok)' : undefined }}>
-                      {trip === 0 ? t(STR.free) : money(trip)}
-                    </motion.b>
-                  </AnimatePresence>
-                </div>
+                <AnimatePresence>
+                  {minAdj > 0 && (
+                    <motion.div className="sum-row" initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}>
+                      <span className="muted">{t(STR.minAdj)}</span><b>{money(minAdj)}</b>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
                 <div className="divider" />
                 <div className="row" style={{ alignItems: 'flex-end' }}>
                   <span style={{ fontWeight: 700 }}>{t(STR.total)}</span>
@@ -107,14 +111,15 @@ export default function Cart() {
                 </div>
               </motion.div>
 
-              <motion.button className="btn block" style={{ marginTop: 16, height: 62, justifyContent: 'space-between', paddingLeft: 26 }} whileTap={{ scale: 0.97 }} onClick={() => setCheckout(true)}>
+              <motion.button className="btn block" style={{ marginTop: 16, height: 62, justifyContent: 'space-between', paddingLeft: 26 }} whileTap={{ scale: 0.97 }}
+                onClick={() => { track('begin_booking', { value: total }); setCheckout(true) }}>
                 <span>{t(STR.schedule)}</span>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
                   {money(total)} <span className="btn-arrow"><ArrowRight size={18} /></span>
                 </span>
               </motion.button>
-              <div style={{ display: 'flex', justifyContent: 'center', gap: 6, marginTop: 14 }} className="xs muted">
-                <ShoppingBag size={13} /> {t({ en: 'Estimates for standard jobs. Final price confirmed on site before work starts.', es: 'Estimados para trabajos estándar. Precio final confirmado antes de comenzar.' })}
+              <div style={{ textAlign: 'center', marginTop: 14, lineHeight: 1.5 }} className="xs muted">
+                {t({ en: 'All prices are BASE prices. The final price is confirmed with you before work starts.', es: 'Todos los precios son precios BASE. El precio final se confirma contigo antes de comenzar.' })}
               </div>
             </motion.div>
           )}

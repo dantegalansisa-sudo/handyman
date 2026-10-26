@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
-import { FREE_TRIP_OVER, SERVICES, TRIP_FEE, type CategoryId, type Lang, type Service, type T } from './data'
+import { MIN_SERVICE, SERVICES, UNIT, type CategoryId, type Lang, type Service, type T } from './data'
 
 export type Tab = 'home' | 'services' | 'cart' | 'bookings' | 'profile'
 export type Cart = Record<string, number>
@@ -46,7 +46,7 @@ type Ctx = {
   clearCart: () => void
   count: number
   subtotal: number
-  trip: number
+  minAdj: number
   total: number
   sheet: Service | null
   openSheet: (s: Service | null) => void
@@ -67,14 +67,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [lang, setLangState] = useState<Lang>(() => load<Lang>('th.lang', navigator.language?.startsWith('es') ? 'es' : 'en'))
   const [tab, setTab] = useState<Tab>('home')
   const [servicesCat, setServicesCat] = useState<CategoryId | 'all'>('all')
-  const [cart, setCart] = useState<Cart>(() => load<Cart>('th.cart', {}))
+  const [cart, setCart] = useState<Cart>(() => load<Cart>('tcs.cart', {}))
   const [sheet, openSheet] = useState<Service | null>(null)
   const [checkout, setCheckout] = useState(false)
-  const [bookings, setBookings] = useState<Booking[]>(() => load<Booking[]>('th.bookings', []))
+  const [bookings, setBookings] = useState<Booking[]>(() => load<Booking[]>('tcs.bookings', []))
   const [toast, setToast] = useState<string | null>(null)
 
-  useEffect(() => save('th.cart', cart), [cart])
-  useEffect(() => save('th.bookings', bookings), [bookings])
+  useEffect(() => save('tcs.cart', cart), [cart])
+  useEffect(() => save('tcs.bookings', bookings), [bookings])
   useEffect(() => {
     save('th.lang', lang)
     document.documentElement.lang = lang
@@ -87,9 +87,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   }, [toast])
 
   const value = useMemo<Ctx>(() => {
-    const count = Object.values(cart).reduce((a, b) => a + b, 0)
-    const subtotal = Object.entries(cart).reduce((a, [id, q]) => a + byId(id).price * q, 0)
-    const trip = subtotal === 0 || subtotal >= FREE_TRIP_OVER ? 0 : TRIP_FEE
+    const count = Object.keys(cart).length
+    const subtotal = round2(Object.entries(cart).reduce((a, [id, q]) => a + byId(id).price * q, 0))
+    const minAdj = subtotal > 0 && subtotal < MIN_SERVICE ? round2(MIN_SERVICE - subtotal) : 0
     return {
       lang,
       setLang: setLangState,
@@ -110,12 +110,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
           else n[id] = qty
           return n
         }),
-      add: (id, qty = 1) => setCart((c) => ({ ...c, [id]: (c[id] ?? 0) + qty })),
+      add: (id, qty = defaultQty(byId(id))) => setCart((c) => ({ ...c, [id]: (c[id] ?? 0) + qty })),
       clearCart: () => setCart({}),
       count,
       subtotal,
-      trip,
-      total: subtotal + trip,
+      minAdj,
+      total: round2(subtotal + minAdj),
       sheet,
       openSheet,
       checkout,
@@ -137,4 +137,18 @@ export function useApp() {
   return c
 }
 
-export const money = (n: number) => `$${n.toLocaleString('en-US')}`
+const round2 = (n: number) => Math.round(n * 100) / 100
+
+export const money = (n: number) =>
+  `$${n.toLocaleString('en-US', { minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2 })}`
+
+export const defaultQty = (s: Service) => s.qty ?? 1
+export const stepOf = (s: Service) => s.step ?? 1
+export const isMeasured = (s: Service) => s.kind !== 'each'
+
+/** "$1.50 per sq ft" / "$30 each" */
+export const priceLabel = (s: Service, lang: Lang) => `${money(s.price)} ${UNIT[s.kind].per[lang]}`
+
+/** "400 sq ft" / "2" */
+export const qtyLabel = (s: Service, qty: number, lang: Lang) =>
+  isMeasured(s) ? `${qty.toLocaleString('en-US')} ${UNIT[s.kind].short[lang]}` : `${qty}`

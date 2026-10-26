@@ -1,13 +1,14 @@
 import { AnimatePresence, motion, useMotionValue, useTransform, animate, type PanInfo } from 'framer-motion'
-import { ArrowRight, Check, ChevronsRight, ClipboardList, Clock, House, LayoutGrid, MoveHorizontal, ShieldCheck, ShoppingBag, Star, User, X } from 'lucide-react'
+import { ArrowRight, BadgeDollarSign, Check, ChevronsRight, ClipboardList, House, Info, LayoutGrid, MoveHorizontal, Ruler, ShoppingBag, User, Wrench, X } from 'lucide-react'
 import { useRef, useState } from 'react'
-import { CATEGORIES, IMG, STR, type Service } from '../data'
-import { money, useApp, type Tab } from '../store'
+import { BUSINESS, CATEGORIES, IMG, SERVICES, STR, UNIT, type Service } from '../data'
+import { track } from '../track'
+import { defaultQty, isMeasured, money, priceLabel, qtyLabel, stepOf, useApp, type Tab } from '../store'
 import { AddButton, AnimatedNumber, CheckDot, Img, Logo, MaskLine, Stepper, Wordmark, ease } from './ui'
 
 /* ---------------- Service row ---------------- */
 export function ServiceRow({ s, i = 0 }: { s: Service; i?: number }) {
-  const { t, cart, add, setQty, openSheet, showToast } = useApp()
+  const { t, lang, cart, add, setQty, openSheet, showToast } = useApp()
   const qty = cart[s.id] ?? 0
   const tint = CATEGORIES.find((c) => c.id === s.cat)!.tint
   return (
@@ -25,24 +26,34 @@ export function ServiceRow({ s, i = 0 }: { s: Service; i?: number }) {
     >
       <div className="svc-img"><Img src={s.img} alt={t(s.name)} /></div>
       <div className="svc-body">
-        <div className="row" style={{ alignItems: 'flex-start' }}>
-          <div className="svc-title">{t(s.name)}</div>
-        </div>
+        <div className="svc-title">{t(s.name)}</div>
         <div className="svc-desc">{t(s.desc)}</div>
-        <div className="xs muted" style={{ display: 'flex', gap: 10, marginTop: 6, alignItems: 'center' }}>
-          <span style={{ display: 'inline-flex', gap: 3, alignItems: 'center' }}><Star size={12} fill="#B08A35" strokeWidth={0} /> {s.rating}</span>
-          <span style={{ display: 'inline-flex', gap: 3, alignItems: 'center' }}><Clock size={12} /> {t(s.time)}</span>
-        </div>
+        {s.notes && <div className="svc-note"><Info size={11} /> {t(s.notes[0])}</div>}
         <div className="svc-foot" style={{ marginTop: 8 }}>
-          <div className="price">{money(s.price)}<small>{t(s.unit)}</small></div>
+          <div className="price">
+            {s.from && <span className="from">{t(STR.from)} </span>}
+            {money(s.price)}<small>{t(UNIT[s.kind].per)}</small>
+          </div>
           <AnimatePresence mode="popLayout" initial={false}>
             {qty > 0 ? (
               <motion.div key="st" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}>
-                <Stepper qty={qty} onChange={(n) => setQty(s.id, n)} />
+                {isMeasured(s) ? (
+                  <button className="qty-chip" onClick={(e) => { e.stopPropagation(); openSheet(s) }}>{qtyLabel(s, qty, lang)}</button>
+                ) : (
+                  <Stepper qty={qty} onChange={(n) => setQty(s.id, n)} />
+                )}
               </motion.div>
             ) : (
               <motion.div key="add" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }}>
-                <AddButton label={t(STR.add)} onClick={() => { add(s.id); showToast(`${t(s.name)} · ${t(STR.added)}`) }} />
+                <AddButton
+                  label={t(STR.add)}
+                  onClick={() => {
+                    if (isMeasured(s)) return openSheet(s)
+                    add(s.id)
+                    track('add_to_estimate', { service: s.id })
+                    showToast(`${t(s.name)} · ${t(STR.added)}`)
+                  }}
+                />
               </motion.div>
             )}
           </AnimatePresence>
@@ -122,13 +133,24 @@ export function ServiceSheet() {
 }
 
 function SheetBody({ s, onClose }: { s: Service; onClose: () => void }) {
-  const { t, cart, setQty, showToast } = useApp()
+  const { t, lang, cart, setQty, showToast } = useApp()
   const inCart = cart[s.id] ?? 0
-  const [qty, setQ] = useState(inCart || 1)
+  const step = stepOf(s)
+  const measured = isMeasured(s)
+  const [qty, setQ] = useState(inCart || defaultQty(s))
+  const [raw, setRaw] = useState(String(inCart || defaultQty(s)))
   const cat = CATEGORIES.find((c) => c.id === s.cat)!
+  const setBoth = (n: number) => {
+    const v = Math.max(1, Math.round(n))
+    setQ(v)
+    setRaw(String(v))
+  }
   const onDragEnd = (_: unknown, info: PanInfo) => {
     if (info.offset.y > 120 || info.velocity.y > 600) onClose()
   }
+  const lineTotal = Math.round(s.price * qty * 100) / 100
+  const own = s.notes ?? []
+  const notes = [...own, STR.basePrice, STR.minimumNote]
   return (
     <>
       <motion.div className="overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={onClose} />
@@ -156,27 +178,48 @@ function SheetBody({ s, onClose }: { s: Service; onClose: () => void }) {
             <h2 className="h2" style={{ marginTop: 12, fontSize: 26 }}>{t(s.name)}</h2>
             <p className="muted" style={{ margin: '8px 0 14px', lineHeight: 1.5, fontSize: 14.5 }}>{t(s.desc)}</p>
             <div className="meta">
-              <span><Star size={13} fill="#B08A35" strokeWidth={0} /> {s.rating} (120+)</span>
-              <span><Clock size={13} /> {t(s.time)}</span>
-              <span><Check size={13} /> {t(STR.why[3].t)}</span>
+              <span><BadgeDollarSign size={14} /> {s.from && `${t(STR.from)} `}{priceLabel(s, lang)}</span>
             </div>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25, duration: 0.6, ease }} className="card" style={{ padding: '8px 18px', marginTop: 18, borderRadius: 22 }}>
-            <div className="h3" style={{ padding: '10px 0 4px' }}>{t(STR.included)}</div>
-            {s.includes.map((inc, k) => (
+            <div className="h3" style={{ padding: '10px 0 4px' }}>{t(STR.goodToKnow)}</div>
+            {notes.map((n, k) => (
               <motion.div key={k} className="incl" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.35 + k * 0.07 }}>
-                <CheckDot /> {t(inc)}
+                {k < own.length ? <span className="incl-ico" style={{ background: '#141414', color: '#fff' }}><Info size={13} /></span> : <CheckDot />} {t(n)}
               </motion.div>
             ))}
           </motion.div>
 
+          {measured && (
+            <div className="card" style={{ padding: 16, marginTop: 14, borderRadius: 22 }} onPointerDownCapture={(e) => e.stopPropagation()}>
+              <div className="xs muted" style={{ fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}><Ruler size={13} /> {t(STR.howMuch)}</div>
+              <div className="row" style={{ marginTop: 10 }}>
+                <label className="measure">
+                  <input
+                    inputMode="numeric"
+                    value={raw}
+                    onChange={(e) => {
+                      const v = e.target.value.replace(/[^0-9]/g, '').slice(0, 6)
+                      setRaw(v)
+                      if (Number(v) > 0) setQ(Number(v))
+                    }}
+                    onBlur={() => setBoth(Number(raw) || defaultQty(s))}
+                    aria-label={t(STR.howMuch)}
+                  />
+                  <span>{t(UNIT[s.kind].short)}</span>
+                </label>
+                <Stepper light qty={qty} hideValue onChange={(n) => setBoth(qty + (n > qty ? step : -step))} />
+              </div>
+            </div>
+          )}
+
           <div className="row" style={{ marginTop: 18 }}>
             <div>
-              <div className="xs muted" style={{ fontWeight: 600 }}>{t(STR.quantity)} · {money(s.price)} {t(s.unit)}</div>
-              <div className="price" style={{ fontSize: 28, marginTop: 2 }}><AnimatedNumber value={s.price * qty} /></div>
+              <div className="xs muted" style={{ fontWeight: 600 }}>{measured ? qtyLabel(s, qty, lang) : t(STR.quantity)} × {money(s.price)}</div>
+              <div className="price" style={{ fontSize: 28, marginTop: 2 }}><AnimatedNumber value={lineTotal} /></div>
             </div>
-            <Stepper light qty={qty} onChange={(n) => setQ(Math.max(1, n))} />
+            {!measured && <Stepper light qty={qty} onChange={(n) => setBoth(n)} />}
           </div>
 
           <motion.button
@@ -185,11 +228,12 @@ function SheetBody({ s, onClose }: { s: Service; onClose: () => void }) {
             whileTap={{ scale: 0.97 }}
             onClick={() => {
               setQty(s.id, qty)
+              track('add_to_estimate', { service: s.id, qty })
               showToast(`${t(s.name)} · ${t(STR.added)}`)
               onClose()
             }}
           >
-            {inCart ? t(STR.update) : t(STR.addToEstimate)} · {money(s.price * qty)}
+            {inCart ? t(STR.update) : t(STR.addToEstimate)} · {money(lineTotal)}
           </motion.button>
         </div>
       </motion.div>
@@ -273,16 +317,16 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
               srcSet="/hero-sm.webp 543w, /hero.webp 1086w"
               sizes="(max-width: 440px) 100vw, 440px"
               src="/hero.webp"
-              alt="Torres Handyman professional"
+              alt="Torres Contractor Solution professional"
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
             />
           </motion.picture>
 
           {[
-            { k: 'r', cls: 'c1', d: 0.9, icon: <Star size={13} fill="#B08A35" strokeWidth={0} />, text: t({ en: '4.9 · 500+ reviews', es: '4.9 · +500 reseñas' }) },
-            { k: 's', cls: 'c2', d: 1.05, icon: <ShieldCheck size={14} color="#B08A35" />, text: t({ en: 'Licensed & insured', es: 'Licenciados y asegurados' }) },
-            { k: 'c', cls: 'c3', d: 1.2, icon: <Clock size={14} color="#B08A35" />, text: t({ en: 'Same-week visits', es: 'Citas esta semana' }) },
+            { k: 'r', cls: 'c1', d: 0.9, icon: <BadgeDollarSign size={14} color="#B08A35" />, text: t({ en: 'Base prices upfront', es: 'Precios base claros' }) },
+            { k: 's', cls: 'c2', d: 1.05, icon: <Wrench size={14} color="#B08A35" />, text: t({ en: `${SERVICES.length} services · one team`, es: `${SERVICES.length} servicios · un equipo` }) },
+            { k: 'c', cls: 'c3', d: 1.2, icon: <Check size={14} color="#B08A35" />, text: t({ en: 'Plumbing · Electrical · Handyman', es: 'Plomería · Electricidad · Handyman' }) },
           ].map((c, i) => (
             <motion.div key={c.k} className={`onb-chip ${c.cls}`} initial={{ opacity: 0, scale: 0.6, y: 14 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 260, damping: 18, delay: c.d }}>
               <motion.span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }} animate={{ y: [0, i % 2 ? 5 : -5, 0] }} transition={{ duration: 4 + i, repeat: Infinity, ease: 'easeInOut', delay: 1.6 + i * 0.3 }}>
@@ -303,7 +347,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 
         <div className="onb-body">
           <motion.div className="onb-kicker" initial={{ opacity: 0, x: -16 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.45, duration: 0.6, ease }}>
-            <span /> {t(STR.tagline)}
+            <span /> {t(BUSINESS.tagline)}
           </motion.div>
           <h1 className="h1" style={{ fontSize: 42 }}>
             <MaskLine delay={0.5}>{t(STR.onbTitle1)}</MaskLine>

@@ -1,5 +1,5 @@
 import { animate, motion, useInView, useMotionValue, useTransform, type Variants } from 'framer-motion'
-import { Droplets, BrickWall, PaintRoller, Layers, Wrench, SprayCan, Zap, Check, Plus, Minus, Star } from 'lucide-react'
+import { Droplets, Drill, PaintRoller, Grid3x3, Hammer, SprayCan, Zap, Check, Plus, Minus, Star } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { CategoryId } from '../data'
 
@@ -8,7 +8,7 @@ export const ease = [0.22, 1, 0.36, 1] as const
 export function Logo({ size = 40, dark = false }: { size?: number; dark?: boolean }) {
   const ink = dark ? '#fff' : '#121212'
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-label="Torres Handyman">
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-label="Torres Contractor Solution">
       <path d="M6 29 L32 7 L58 29" fill="none" stroke="#B08A35" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M12 25 V54 H52" fill="none" stroke="#B08A35" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
       <g transform="translate(31 36)" fill={ink}>
@@ -27,7 +27,7 @@ export function Wordmark({ dark = false }: { dark?: boolean }) {
   return (
     <div style={{ lineHeight: 1 }}>
       <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: '0.14em', color: '#B08A35' }}>TORRES</div>
-      <div style={{ fontWeight: 800, fontSize: 12.5, letterSpacing: '0.2em', color: dark ? '#fff' : '#121212', marginTop: 2 }}>HANDYMAN</div>
+      <div style={{ fontWeight: 800, fontSize: 8.6, letterSpacing: '0.13em', color: dark ? '#fff' : '#121212', marginTop: 3, whiteSpace: 'nowrap' }}>CONTRACTOR SOLUTION</div>
     </div>
   )
 }
@@ -35,10 +35,10 @@ export function Wordmark({ dark = false }: { dark?: boolean }) {
 export const CAT_ICON: Record<CategoryId, (p: { size?: number }) => ReactNode> = {
   electrical: (p) => <Zap size={p.size ?? 24} strokeWidth={1.8} />,
   plumbing: (p) => <Droplets size={p.size ?? 24} strokeWidth={1.8} />,
-  pvc: (p) => <Wrench size={p.size ?? 24} strokeWidth={1.8} />,
-  concrete: (p) => <BrickWall size={p.size ?? 24} strokeWidth={1.8} />,
+  handyman: (p) => <Drill size={p.size ?? 24} strokeWidth={1.8} />,
+  concrete: (p) => <Hammer size={p.size ?? 24} strokeWidth={1.8} />,
   painting: (p) => <PaintRoller size={p.size ?? 24} strokeWidth={1.8} />,
-  drywall: (p) => <Layers size={p.size ?? 24} strokeWidth={1.8} />,
+  tile: (p) => <Grid3x3 size={p.size ?? 24} strokeWidth={1.8} />,
   washing: (p) => <SprayCan size={p.size ?? 24} strokeWidth={1.8} />,
 }
 
@@ -111,11 +111,11 @@ export function CountUp({ to, suffix = '', decimals = 0 }: { to: number; suffix?
   return <motion.span ref={ref}>{text}</motion.span>
 }
 
-export function Stepper({ qty, onChange, light = false }: { qty: number; onChange: (n: number) => void; light?: boolean }) {
+export function Stepper({ qty, onChange, light = false, hideValue = false }: { qty: number; onChange: (n: number) => void; light?: boolean; hideValue?: boolean }) {
   return (
     <motion.div className={`stepper ${light ? 'light' : ''}`} initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 30 }}>
       <button aria-label="Decrease" onClick={(e) => { e.stopPropagation(); onChange(qty - 1) }}><Minus size={16} /></button>
-      <motion.span key={qty} className="n" initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>{qty}</motion.span>
+      {!hideValue && <motion.span key={qty} className="n" initial={{ y: -8, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>{qty}</motion.span>}
       <button aria-label="Increase" onClick={(e) => { e.stopPropagation(); onChange(qty + 1) }}><Plus size={16} /></button>
     </motion.div>
   )

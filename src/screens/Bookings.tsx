@@ -29,7 +29,7 @@ export default function Bookings() {
             <div style={{ display: 'grid', gap: 12 }}>
               <AnimatePresence initial={false}>
                 {bookings.map((b, i) => {
-                  const confirmed = Date.now() - b.createdAt > 60_000
+                  const confirmed = false // the business confirms on WhatsApp
                   const stage = confirmed ? 1 : 0
                   const first = byId(b.items[0].id)
                   return (

@@ -1,10 +1,17 @@
 {
-  "name": "Torres Handyman",
+  "name": "Torres Contractor Solution",
   "short_name": "Torres",
-  "description": "Book home repairs with upfront prices.",
+  "description": "Plumbing, electrical & handyman services with base prices.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#F6F3EA",
   "theme_color": "#F6F3EA",
-  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }
