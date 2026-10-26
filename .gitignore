@@ -7,3 +7,6 @@ Gemini_Generated_Image_*
 inspiracion webapp/
 *.tsbuildinfo
 heros.png
+
+# Raw photos before processing (run npm run photos)
+portfolio-inbox/

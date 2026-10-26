@@ -223,6 +223,8 @@ export const STR = {
   before: { en: 'Before', es: 'Antes' },
   after: { en: 'After', es: 'Después' },
   faq: { en: 'Questions', es: 'Preguntas' },
+  workTitle: { en: 'Our work', es: 'Trabajos realizados' },
+  workSub: { en: 'Photos of jobs we’ve completed.', es: 'Fotos de trabajos que hemos completado.' },
   ctaTitle: { en: 'Need something not listed?', es: '¿Necesitas algo que no aparece?' },
   ctaSub: { en: 'We do more jobs quoted in person. Send us a photo on WhatsApp.', es: 'Hacemos más trabajos que se cotizan en persona. Envíanos una foto por WhatsApp.' },
   call: { en: 'Call', es: 'Llamar' },

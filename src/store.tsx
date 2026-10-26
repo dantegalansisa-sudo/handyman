@@ -1,7 +1,8 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { MIN_SERVICE, SERVICES, UNIT, type CategoryId, type Lang, type Service, type T } from './data'
+import type { Project } from './portfolio'
 
-export type Tab = 'home' | 'services' | 'cart' | 'bookings' | 'profile'
+export type Tab = 'home' | 'services' | 'work' | 'cart' | 'bookings' | 'profile'
 export type Cart = Record<string, number>
 export type Booking = {
   id: string
@@ -50,6 +51,8 @@ type Ctx = {
   total: number
   sheet: Service | null
   openSheet: (s: Service | null) => void
+  project: Project | null
+  openProject: (p: Project | null) => void
   checkout: boolean
   setCheckout: (v: boolean) => void
   bookings: Booking[]
@@ -69,6 +72,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [servicesCat, setServicesCat] = useState<CategoryId | 'all'>('all')
   const [cart, setCart] = useState<Cart>(() => load<Cart>('tcs.cart', {}))
   const [sheet, openSheet] = useState<Service | null>(null)
+  const [project, openProject] = useState<Project | null>(null)
   const [checkout, setCheckout] = useState(false)
   const [bookings, setBookings] = useState<Booking[]>(() => load<Booking[]>('tcs.bookings', []))
   const [toast, setToast] = useState<string | null>(null)
@@ -118,6 +122,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
       total: round2(subtotal + minAdj),
       sheet,
       openSheet,
+      project,
+      openProject,
       checkout,
       setCheckout,
       bookings,
@@ -126,7 +132,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       toast,
       showToast: setToast,
     }
-  }, [lang, tab, servicesCat, cart, sheet, checkout, bookings, toast])
+  }, [lang, tab, servicesCat, cart, sheet, project, checkout, bookings, toast])
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
 }

@@ -9,9 +9,11 @@ import Cart from './screens/Cart'
 import Checkout from './screens/Checkout'
 import Bookings from './screens/Bookings'
 import Profile from './screens/Profile'
+import Work from './screens/Work'
+import { ProjectViewer } from './components/work'
 
-const SCREENS: Record<Tab, () => JSX.Element> = { home: Home, services: Services, cart: Cart, bookings: Bookings, profile: Profile }
-const ORDER: Tab[] = ['home', 'services', 'cart', 'bookings', 'profile']
+const SCREENS: Record<Tab, () => JSX.Element> = { home: Home, services: Services, work: Work, cart: Cart, bookings: Bookings, profile: Profile }
+const ORDER: Tab[] = ['home', 'services', 'work', 'cart', 'bookings', 'profile']
 
 function seenOnboarding() {
   try {
@@ -49,6 +51,7 @@ function Shell() {
         </>
       )}
       <ServiceSheet />
+      <ProjectViewer />
       <Checkout />
       <Toast />
       <AnimatePresence>

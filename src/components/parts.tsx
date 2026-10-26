@@ -1,5 +1,5 @@
 import { AnimatePresence, motion, useMotionValue, useTransform, animate, type PanInfo } from 'framer-motion'
-import { ArrowRight, BadgeDollarSign, Check, ChevronsRight, ClipboardList, House, Info, LayoutGrid, MoveHorizontal, Ruler, ShoppingBag, User, Wrench, X } from 'lucide-react'
+import { ArrowRight, BadgeDollarSign, Check, ChevronsRight, ClipboardList, House, Images, Info, LayoutGrid, MoveHorizontal, Ruler, ShoppingBag, Wrench, X } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { BUSINESS, CATEGORIES, IMG, SERVICES, STR, UNIT, type Service } from '../data'
 import { track } from '../track'
@@ -67,9 +67,9 @@ export function ServiceRow({ s, i = 0 }: { s: Service; i?: number }) {
 const NAV: { id: Tab; icon: typeof House; label: keyof typeof STR }[] = [
   { id: 'home', icon: House, label: 'home' },
   { id: 'services', icon: LayoutGrid, label: 'services' },
+  { id: 'work', icon: Images, label: 'workTitle' },
   { id: 'cart', icon: ShoppingBag, label: 'cart' },
   { id: 'bookings', icon: ClipboardList, label: 'bookings' },
-  { id: 'profile', icon: User, label: 'profile' },
 ]
 
 export function BottomNav() {
@@ -94,8 +94,8 @@ export function BottomNav() {
 
 /* ---------------- Floating estimate bar ---------------- */
 export function CartBar() {
-  const { count, total, tab, go, t, sheet, checkout } = useApp()
-  const show = count > 0 && tab !== 'cart' && !sheet && !checkout
+  const { count, total, tab, go, t, sheet, checkout, project } = useApp()
+  const show = count > 0 && tab !== 'cart' && !sheet && !checkout && !project
   return (
     <div className="cartbar-wrap">
       <AnimatePresence>

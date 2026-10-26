@@ -1,10 +1,11 @@
 import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion'
-import { ArrowRight, BadgeDollarSign, ChevronDown, MapPin, MessageCircle, Phone, Search, ShoppingBag, Truck, Users, Wallet, X } from 'lucide-react'
+import { ArrowRight, BadgeDollarSign, ChevronDown, MapPin, MessageCircle, Phone, Search, Truck, User, Users, Wallet, X } from 'lucide-react'
 import { useMemo, useRef, useState } from 'react'
 import { BUSINESS, CATEGORIES, FAQ, IMG, MIN_SERVICE, PICKUP_STORES, SERVICES, STR, UNIT, type CategoryId } from '../data'
 import { money, useApp } from '../store'
 import { track } from '../track'
 import { BeforeAfter, ServiceRow } from '../components/parts'
+import { WorkStrip } from '../components/work'
 import { CAT_ICON, CountUp, Img, Logo, MaskLine, Reveal, ease } from '../components/ui'
 
 export function waLink(text: string) {
@@ -15,7 +16,7 @@ export const quoteMsg = (lang: 'en' | 'es') =>
   lang === 'es' ? 'Hola Torres Contractor Solution, quiero una cotización. Les envío foto.' : 'Hi Torres Contractor Solution, I’d like a quote. Sending a photo.'
 
 export default function Home() {
-  const { t, go, count, openSheet, lang } = useApp()
+  const { t, go, openSheet, lang } = useApp()
   const [q, setQ] = useState('')
   const [chip, setChip] = useState<CategoryId | 'all'>('all')
   const promoRef = useRef<HTMLDivElement>(null)
@@ -44,9 +45,8 @@ export default function Home() {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <a className="icon-btn" href={BUSINESS.phoneHref} onClick={() => track('call_click', { from: 'header' })} aria-label="Call"><Phone size={18} /></a>
-          <motion.button whileTap={{ scale: 0.9 }} className="icon-btn" onClick={() => go('cart')} aria-label="Estimate">
-            <ShoppingBag size={18} />
-            {count > 0 && <span className="badge">{count}</span>}
+          <motion.button whileTap={{ scale: 0.9 }} className="icon-btn dark" onClick={() => go('profile')} aria-label="Contact">
+            <User size={18} />
           </motion.button>
         </div>
       </header>
@@ -178,6 +178,8 @@ export default function Home() {
                   </Reveal>
                 </div>
               </section>
+
+              <WorkStrip />
 
               {/* Stats — all real numbers from the catalog */}
               <Reveal className="sec">
