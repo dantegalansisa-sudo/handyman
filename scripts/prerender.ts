@@ -4,7 +4,7 @@
  * HTML version of the page content (the React app replaces it on load).
  * Also writes sitemap.xml and robots.txt.
  *
- * Site URL: SITE_URL env var, else Vercel's production domain, else localhost.
+ * Site URL: https://www.torreshandymanpr.com (override with the SITE_URL env var).
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -14,11 +14,8 @@ import { getProjects, tx } from '../src/portfolio'
 import { allPaths, metaFor, parsePath, projectPath, servicePath } from '../src/seo'
 
 const DIST = 'dist'
-const SITE = (
-  process.env.SITE_URL ||
-  (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : '') ||
-  'http://localhost:4173'
-).replace(/\/$/, '')
+/** Production domain. Override with SITE_URL (e.g. for a staging build). */
+const SITE = (process.env.SITE_URL || 'https://www.torreshandymanpr.com').replace(/\/$/, '')
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const abs = (p: string) => (p.startsWith('http') ? p : `${SITE}${p}`)

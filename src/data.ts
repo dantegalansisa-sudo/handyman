@@ -35,18 +35,19 @@ export const IMG = {
   toilet: u('1569597967185-cd6120712154'),
   bathSink: u('1595514535116-d0401260e7cf'),
   kitchenFaucet: u('1629078692818-c5a0443f4ae3'),
-  disposal: u('1757787697646-e84d5490add1'),
+  disposal: '/services/garbage-disposal.webp', // client photo
   shower: u('1698724624855-e9dbc5a0bddb'),
-  cistern: u('1787672357817-0840af8debbf'),
+  cistern: '/portfolio/sistema-cisterna-bomba/1.webp', // client's own job
   regulator: u('1761758674188-2b8e4c89c5e2'),
   valve: u('1607472586893-edb57bdc0e39'),
   faucetFix: u('1542013936693-884638332954'),
-  heater: u('1776860155275-eee24bfb1dee'),
-  washer: u('1626806787461-102c1bfaaea1'),
+  heater: '/services/water-heater-tankless.webp', // client photo
+  heaterTank: '/services/water-heater-tank.webp', // client photo
+  washer: '/services/washer-box.webp', // client photo
   // electrical
   electrical: u('1732660780054-0cf9fadb9d30'),
   outlet: u('1758101755915-462eddc23f57'),
-  spotlight: u('1660330589693-99889d60181e'),
+  spotlight: u('1705909944158-5325de9bb3a7'),
   fixture: u('1554995207-c18c203602cb'),
   fan: u('1762529716272-b316f61502e7'),
   conduit: u('1768321913920-d3ac011e0683'),
@@ -72,15 +73,15 @@ export const IMG = {
   paintOut: u('1759406066673-f76869a4e6db'),
   // tile
   tile: u('1656646523907-97b094c7e63a'),
-  tileFloor: u('1523413307857-ef24c53571ae'),
-  tileWall: u('1625646333826-c30c4e4d73d2'),
+  tileFloor: u('1731185752376-a4cf3e8556fa'),
+  tileWall: u('1566446896748-6075a87760c1'),
   // washing & roofs
   washing: u('1718152423993-a29048dbc223'),
   washing2: u('1718152521364-b9655b8a7926'),
   roof: u('1674485169641-bcb2bf6f1df9'),
   // concrete & demolition
   concrete: u('1774516534097-76eb46de7229'),
-  demo: u('1649692112200-f81e4a0421e3'),
+  demo: u('1601003768474-4af9fea86fa2'),
 }
 
 export type CategoryId = 'plumbing' | 'electrical' | 'handyman' | 'painting' | 'tile' | 'washing' | 'concrete'
@@ -134,6 +135,7 @@ export let SERVICES: Service[] = [
   { id: 'disposal', cat: 'plumbing', name: { en: 'Garbage Disposal Installation', es: 'Instalación de Triturador' }, desc: { en: 'Mount and connect a garbage disposal under your sink.', es: 'Instalamos y conectamos el triturador bajo el fregadero.' }, price: 100, kind: 'each', img: IMG.disposal },
   { id: 'shower-valve', cat: 'plumbing', name: { en: 'Shower Valve Installation', es: 'Instalación de Mezcladora de Ducha' }, desc: { en: 'Install a new shower mixing valve and trim.', es: 'Instalamos mezcladora de ducha nueva.' }, price: 150, kind: 'each', img: IMG.shower },
   { id: 'water-heater', cat: 'plumbing', name: { en: 'Tankless Water Heater', es: 'Calentador de Línea' }, desc: { en: 'Install an on-demand (tankless) water heater.', es: 'Instalación de calentador de línea (sin tanque).' }, price: 125, kind: 'each', img: IMG.heater, popular: true },
+  { id: 'water-heater-tank', cat: 'plumbing', name: { en: 'Tank Water Heater Installation', es: 'Instalación de Calentador de Tanque' }, desc: { en: 'Install a standard tank water heater with its water connections.', es: 'Instalamos calentador de tanque con sus conexiones de agua.' }, price: 225, kind: 'each', img: IMG.heaterTank },
   { id: 'washer-box', cat: 'plumbing', name: { en: 'Washer Box Installation', es: 'Instalación de Caja de Lavadora' }, desc: { en: 'Recessed washer outlet box with water and drain connections.', es: 'Caja empotrada para lavadora con conexiones de agua y desagüe.' }, price: 150, kind: 'each', img: IMG.washer },
   { id: 'cistern', cat: 'plumbing', name: { en: 'Water Cistern with Pump', es: 'Instalación de Cisterna con Bomba' }, desc: { en: 'Install a water storage cistern with its pressure pump.', es: 'Instalamos cisterna de agua con su bomba de presión.' }, price: 400, kind: 'each', img: IMG.cistern, notes: [noMaterials], popular: true },
   { id: 'regulator', cat: 'plumbing', name: { en: 'Water Pressure Regulator', es: 'Regulador de Presión de Agua' }, desc: { en: 'Install a pressure regulator to protect your pipes and fixtures.', es: 'Instalamos regulador de presión para proteger tuberías y llaves.' }, price: 200, kind: 'each', img: IMG.regulator, notes: [noMaterials] },
@@ -142,7 +144,7 @@ export let SERVICES: Service[] = [
 
   // ---------- Electrical ----------
   { id: 'outlet', cat: 'electrical', name: { en: 'Outlet or Switch Installation', es: 'Instalación de Receptáculo o Switch' }, desc: { en: 'Install or replace receptacles and light switches.', es: 'Instalamos o cambiamos receptáculos y switches.' }, price: 30, kind: 'each', img: IMG.outlet, popular: true },
-  { id: 'spotlight', cat: 'electrical', name: { en: 'Spotlight Installation', es: 'Instalación de Spotlight' }, desc: { en: 'Recessed spotlights, priced per light.', es: 'Spotlights empotrados, precio por unidad.' }, price: 15, kind: 'each', img: IMG.spotlight },
+  { id: 'spotlight', cat: 'electrical', name: { en: 'Spotlight Installation', es: 'Instalación de Spotlight' }, desc: { en: 'Recessed “eyeball” spotlights in the ceiling, priced per light.', es: 'Luces ojo de buey empotradas en el techo, precio por unidad.' }, price: 15, kind: 'each', img: IMG.spotlight },
   { id: 'fixture', cat: 'electrical', name: { en: 'Light Fixture Installation', es: 'Instalación de Lámpara' }, desc: { en: 'Ceiling or wall lights. Price depends on fixture size.', es: 'Lámparas de techo o pared. El precio depende del tamaño.' }, price: 50, kind: 'each', from: true, img: IMG.fixture },
   { id: 'fan', cat: 'electrical', name: { en: 'Ceiling Fan Installation', es: 'Instalación de Abanico de Techo' }, desc: { en: 'Assemble, mount and wire your ceiling fan.', es: 'Ensamblamos, montamos y conectamos tu abanico.' }, price: 100, kind: 'each', img: IMG.fan, popular: true },
   { id: 'conduit', cat: 'electrical', name: { en: 'In-Wall Conduit Installation', es: 'Instalación de Tubería Empotrada' }, desc: { en: 'Recessed electrical conduit, priced per foot.', es: 'Tubería eléctrica empotrada, precio por pie.' }, price: 10, kind: 'ft', qty: 20, step: 5, img: IMG.conduit },

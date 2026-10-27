@@ -15,3 +15,6 @@ portfolio-inbox/
 fotos de proyecto realizado/
 .env
 .env.local
+
+# Raw photos from the client
+new fotos/

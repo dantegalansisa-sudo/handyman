@@ -144,7 +144,7 @@ export let PROJECTS: Project[] = [
       es: 'Calentador de línea, calentador solar en techo y calentador de tanque: instalados con sus conexiones de agua.',
       en: 'Tankless, rooftop solar and tank water heaters, installed with their water connections.',
     },
-    services: ['water-heater'],
+    services: ['water-heater', 'water-heater-tank'],
     photos: pics('calentadores-de-agua', [[900, 1600, { es: 'Calentador de línea', en: 'Tankless heater' }], [1600, 900, { es: 'Calentador solar', en: 'Solar heater' }], [900, 1600, { es: 'Calentador de tanque', en: 'Tank heater' }]]),
   },
   {

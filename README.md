@@ -6,7 +6,7 @@ The flow works like Uber Eats: customers browse services with base prices, add t
 ## Real business info (from the client)
 - **All prices are BASE prices**; the final price is confirmed before work starts. Other jobs are quoted in person.
 - **Minimum service: $75** (the estimate adds an adjustment when the subtotal is lower).
-- **38 services in 7 trades:** Plumbing, Electrical, Handyman, Painting, Tile, Pressure Washing & Roof Sealing, Concrete & Demolition.
+- **39 services in 7 trades:** Plumbing, Electrical, Handyman, Painting, Tile, Pressure Washing & Roof Sealing, Concrete & Demolition.
 - Measured services (per sq ft / per ft / per mile) let the customer enter the size, e.g. interior painting at $1.50/sq ft.
 - Store pickup from Home Depot, IKEA, Home Design, Berrios and Rooms To Go: $3/mile.
 
