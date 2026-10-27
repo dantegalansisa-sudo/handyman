@@ -6,6 +6,8 @@ import { money, useApp } from '../store'
 import { track } from '../track'
 import { BeforeAfter, ServiceRow } from '../components/parts'
 import { WorkStrip } from '../components/work'
+import { DesktopHero } from '../components/desktop'
+import { useIsDesktop } from '../hooks'
 import { CAT_ICON, CountUp, Img, Logo, MaskLine, Reveal, ease } from '../components/ui'
 
 export function waLink(text: string) {
@@ -13,10 +15,11 @@ export function waLink(text: string) {
 }
 
 export const quoteMsg = (lang: 'en' | 'es') =>
-  lang === 'es' ? 'Hola Torres Contractor Solution, quiero una cotización. Les envío foto.' : 'Hi Torres Contractor Solution, I’d like a quote. Sending a photo.'
+  lang === 'es' ? `Hola ${BUSINESS.name}, quiero una cotización. Les envío foto.` : `Hi ${BUSINESS.name}, I’d like a quote. Sending a photo.`
 
 export default function Home() {
   const { t, go, openSheet, lang } = useApp()
+  const desktop = useIsDesktop()
   const [q, setQ] = useState('')
   const [chip, setChip] = useState<CategoryId | 'all'>('all')
   const promoRef = useRef<HTMLDivElement>(null)
@@ -40,7 +43,7 @@ export default function Home() {
           <Logo size={42} />
           <div>
             <div className="xs muted" style={{ fontWeight: 600 }}>{t(STR.hello)}</div>
-            <div style={{ fontWeight: 800, fontSize: 14.5, letterSpacing: '-0.01em' }}>Torres Contractor Solution</div>
+            <div style={{ fontWeight: 800, fontSize: 14.5, letterSpacing: '-0.01em' }}>{BUSINESS.name}</div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
@@ -51,7 +54,9 @@ export default function Home() {
         </div>
       </header>
 
+      {desktop && <DesktopHero q={q} setQ={setQ} />}
       <div className="page">
+        {!desktop && <>
         <h1 className="h1" style={{ marginTop: 10 }}>
           <MaskLine delay={0.05}>{t(STR.homeTitle1)}</MaskLine>
           <MaskLine delay={0.15}><span className="light">{t(STR.homeTitle2).split(' ').slice(0, -1).join(' ')} </span><span className="gold">{t(STR.homeTitle2).split(' ').slice(-1)}</span></MaskLine>
@@ -64,6 +69,7 @@ export default function Home() {
             {q && <button onClick={() => setQ('')} aria-label="Clear"><X size={18} /></button>}
           </label>
         </motion.div>
+        </>}
 
         <AnimatePresence mode="wait">
           {q ? (
@@ -96,7 +102,7 @@ export default function Home() {
               </motion.div>
 
               {/* Promo card */}
-              <motion.div ref={promoRef} className="promo" style={{ marginTop: 18 }} initial={{ opacity: 0, y: 30, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.45, duration: 0.9, ease }}>
+              <motion.div ref={promoRef} className="promo mobile-only" style={{ marginTop: 18 }} initial={{ opacity: 0, y: 30, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.45, duration: 0.9, ease }}>
                 <motion.img className="ph" src={IMG.pro} alt="" style={{ y: promoY, scale: promoScale }} />
                 <div style={{ position: 'relative' }}>
                   <span className="pill"><BadgeDollarSign size={14} color="#B08A35" /> {t(STR.promoTag)}</span>
@@ -125,7 +131,7 @@ export default function Home() {
                   <h2 className="h2"><MaskLine inView>{t(STR.popular)}</MaskLine></h2>
                   <button className="link" onClick={() => go('services', chip)}>{t(STR.seeAll)}</button>
                 </div>
-                <div className="hscroll">
+                <div className="hscroll pop-row">
                   <AnimatePresence mode="popLayout">
                     {shown.map((s, i) => (
                       <motion.button
@@ -266,10 +272,10 @@ export default function Home() {
 
               <footer style={{ textAlign: 'center', marginTop: 36 }}>
                 <Logo size={44} />
-                <div className="small" style={{ fontWeight: 800, letterSpacing: '0.12em', marginTop: 8 }}>TORRES CONTRACTOR SOLUTION</div>
+                <div className="small" style={{ fontWeight: 800, letterSpacing: '0.12em', marginTop: 8, textTransform: 'uppercase' }}>{BUSINESS.name}</div>
                 <div className="xs muted" style={{ letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 4 }}>{t(BUSINESS.tagline)}</div>
                 <div className="xs muted" style={{ marginTop: 12, display: 'inline-flex', gap: 6, alignItems: 'center' }}><MapPin size={12} /> {t(BUSINESS.area)}</div>
-                <div className="xs muted" style={{ marginTop: 4 }}>© {new Date().getFullYear()} Torres Contractor Solution · {BUSINESS.phone}</div>
+                <div className="xs muted" style={{ marginTop: 4 }}>© {new Date().getFullYear()} {BUSINESS.name} · {BUSINESS.phone}</div>
                 <div className="xs muted" style={{ marginTop: 4 }}>{t({ en: 'All prices are base prices.', es: 'Todos los precios son precios base.' })}</div>
               </footer>
             </motion.div>

@@ -1,8 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { MIN_SERVICE, SERVICES, UNIT, type CategoryId, type Lang, type Service, type T } from './data'
-import type { Project } from './portfolio'
+import { getProjects, type Project } from './portfolio'
+import { applyMeta, parsePath, projectPath, servicePath, tabPath, type Tab } from './seo'
 
-export type Tab = 'home' | 'services' | 'work' | 'cart' | 'bookings' | 'profile'
+export type { Tab } from './seo'
 export type Cart = Record<string, number>
 export type Booking = {
   id: string
@@ -52,7 +53,8 @@ type Ctx = {
   sheet: Service | null
   openSheet: (s: Service | null) => void
   project: Project | null
-  openProject: (p: Project | null) => void
+  /** silent: close without touching the URL (used when handing off to another overlay). */
+  openProject: (p: Project | null, silent?: boolean) => void
   checkout: boolean
   setCheckout: (v: boolean) => void
   bookings: Booking[]
@@ -60,24 +62,32 @@ type Ctx = {
   removeBooking: (id: string) => void
   toast: string | null
   showToast: (m: string) => void
+  /** Bumps when admin-managed content arrives, so screens re-read data. */
+  contentVersion: number
 }
 
 const AppCtx = createContext<Ctx | null>(null)
 
-export const byId = (id: string) => SERVICES.find((s) => s.id === id)!
+export const findService = (id: string) => SERVICES.find((s) => s.id === id)
+export const byId = (id: string) => findService(id)!
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const initial = useRef(parsePath(location.pathname)).current
   const [lang, setLangState] = useState<Lang>(() => load<Lang>('th.lang', navigator.language?.startsWith('es') ? 'es' : 'en'))
-  const [tab, setTab] = useState<Tab>('home')
-  const [servicesCat, setServicesCat] = useState<CategoryId | 'all'>('all')
-  const [cart, setCart] = useState<Cart>(() => load<Cart>('tcs.cart', {}))
-  const [sheet, openSheet] = useState<Service | null>(null)
-  const [project, openProject] = useState<Project | null>(null)
+  const [tab, setTab] = useState<Tab>(initial.tab)
+  const [servicesCat, setServicesCat] = useState<CategoryId | 'all'>(initial.cat ?? 'all')
+  const [rawCart, setCart] = useState<Cart>(() => load<Cart>('tcs.cart', {}))
+  const [sheet, setSheet] = useState<Service | null>(() => (initial.serviceId ? findService(initial.serviceId) ?? null : null))
+  const [project, setProject] = useState<Project | null>(() => getProjects().find((p) => p.id === initial.projectId) ?? null)
   const [checkout, setCheckout] = useState(false)
   const [bookings, setBookings] = useState<Booking[]>(() => load<Booking[]>('tcs.bookings', []))
   const [toast, setToast] = useState<string | null>(null)
+  const [contentVersion, setContentVersion] = useState(0)
 
-  useEffect(() => save('tcs.cart', cart), [cart])
+  // Drop cart lines for services the admin removed.
+  const cart = useMemo(() => Object.fromEntries(Object.entries(rawCart).filter(([id]) => findService(id))), [rawCart, contentVersion])
+
+  useEffect(() => save('tcs.cart', rawCart), [rawCart])
   useEffect(() => save('tcs.bookings', bookings), [bookings])
   useEffect(() => {
     save('th.lang', lang)
@@ -90,22 +100,68 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(id)
   }, [toast])
 
+  useEffect(() => {
+    const onContent = () => setContentVersion((v) => v + 1)
+    window.addEventListener('content-updated', onContent)
+    return () => window.removeEventListener('content-updated', onContent)
+  }, [])
+
+  /* ---------- URL sync: every screen, service and project has its own address ---------- */
+  const navigate = useCallback((path: string, overlay = false) => {
+    if (location.pathname !== path) history.pushState({ overlay }, '', path)
+    applyMeta(path)
+  }, [])
+
+  const closeOverlay = useCallback((basePath: string) => {
+    if (history.state?.overlay) history.back()
+    else {
+      history.replaceState(null, '', basePath)
+      applyMeta(basePath)
+    }
+  }, [])
+
+  useEffect(() => {
+    applyMeta(location.pathname)
+    const onPop = () => {
+      const r = parsePath(location.pathname)
+      setTab(r.tab)
+      if (r.cat) setServicesCat(r.cat)
+      setSheet(r.serviceId ? findService(r.serviceId) ?? null : null)
+      setProject(r.projectId ? getProjects().find((p) => p.id === r.projectId) ?? null : null)
+      setCheckout(false)
+      applyMeta(location.pathname)
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
+
   const value = useMemo<Ctx>(() => {
     const count = Object.keys(cart).length
     const subtotal = round2(Object.entries(cart).reduce((a, [id, q]) => a + byId(id).price * q, 0))
     const minAdj = subtotal > 0 && subtotal < MIN_SERVICE ? round2(MIN_SERVICE - subtotal) : 0
+    const base = tabPath(tab, servicesCat)
     return {
       lang,
       setLang: setLangState,
-      t: (s) => s[lang],
+      t: (s) => s[lang] || s.es || s.en,
       tab,
       go: (next, cat) => {
+        const c = cat ?? (next === 'services' ? servicesCat : undefined)
         if (cat) setServicesCat(cat)
         setTab(next)
+        setSheet(null)
+        setProject(null)
+        navigate(tabPath(next, c))
         window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
       },
       servicesCat,
-      setServicesCat,
+      setServicesCat: (c) => {
+        setServicesCat(c)
+        if (tab === 'services') {
+          history.replaceState(null, '', tabPath('services', c))
+          applyMeta(tabPath('services', c))
+        }
+      },
       cart,
       setQty: (id, qty) =>
         setCart((c) => {
@@ -121,9 +177,18 @@ export function AppProvider({ children }: { children: ReactNode }) {
       minAdj,
       total: round2(subtotal + minAdj),
       sheet,
-      openSheet,
+      openSheet: (s) => {
+        setSheet(s)
+        if (s) navigate(servicePath(s), true)
+        else closeOverlay(base)
+      },
       project,
-      openProject,
+      openProject: (p, silent) => {
+        setProject(p)
+        if (silent) return
+        if (p) navigate(projectPath(p), true)
+        else closeOverlay(base)
+      },
       checkout,
       setCheckout,
       bookings,
@@ -131,8 +196,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       removeBooking: (id) => setBookings((bs) => bs.filter((b) => b.id !== id)),
       toast,
       showToast: setToast,
+      contentVersion,
     }
-  }, [lang, tab, servicesCat, cart, sheet, project, checkout, bookings, toast])
+  }, [lang, tab, servicesCat, cart, sheet, project, checkout, bookings, toast, contentVersion, navigate, closeOverlay])
 
   return <AppCtx.Provider value={value}>{children}</AppCtx.Provider>
 }

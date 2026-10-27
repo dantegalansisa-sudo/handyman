@@ -309,7 +309,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
             transition={{ scale: { duration: 1.4, ease, delay: 0.1 }, opacity: { duration: 1, delay: 0.1 }, rotate: { duration: 60, repeat: Infinity, ease: 'linear' } }} />
           <motion.div className="onb-ring onb-ring-2" initial={{ scale: 0.6, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1.6, ease, delay: 0.2 }} />
           <motion.div className="onb-watermark" initial={{ x: -60, opacity: 0 }} animate={{ x: 0, opacity: 1 }} transition={{ duration: 1.4, ease, delay: 0.15 }}>
-            TORRES
+            {BUSINESS.name.split(' ')[0]}
           </motion.div>
 
           <motion.picture className="onb-pro" initial={{ y: 80, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1.2, ease, delay: 0.2 }}>
@@ -317,7 +317,7 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
               srcSet="/hero-sm.webp 543w, /hero.webp 1086w"
               sizes="(max-width: 440px) 100vw, 440px"
               src="/hero.webp"
-              alt="Torres Contractor Solution professional"
+              alt={`${BUSINESS.name} professional`}
               animate={{ y: [0, -6, 0] }}
               transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1.4 }}
             />

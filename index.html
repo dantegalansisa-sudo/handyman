@@ -3,19 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <!--seo:start-->
     <title>Torres Contractor Solution | Plumbing, Electrical & Handyman in Puerto Rico</title>
     <meta name="description" content="Plumbing, electrical, handyman, painting, tile, pressure washing, roof sealing, concrete and demolition in Puerto Rico. See base prices and request service in minutes. Call 939-496-4444." />
-    <meta name="keywords" content="handyman Puerto Rico, plomero Puerto Rico, electricista Puerto Rico, sellado de techo, lavado a presión, instalación de toilet, instalación de abanico, cargador carro eléctrico, contractor Puerto Rico" />
     <meta name="robots" content="index, follow" />
+    <meta property="og:title" content="Torres Contractor Solution — Your fast & reliable solution" />
+    <meta property="og:description" content="Plumbing, electrical, handyman and more in Puerto Rico. See base prices and request service in minutes." />
+    <meta property="og:image" content="/hero.webp" />
+    <!--seo:end-->
+    <meta name="keywords" content="handyman Puerto Rico, plomero Puerto Rico, electricista Puerto Rico, sellado de techo, lavado a presión, instalación de toilet, instalación de abanico, cargador carro eléctrico, panel eléctrico, cisterna con bomba, contractor Puerto Rico" />
     <meta name="theme-color" content="#F6F3EA" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Torres" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Torres Contractor Solution" />
-    <meta property="og:title" content="Torres Contractor Solution — Your fast & reliable solution" />
-    <meta property="og:description" content="Plumbing, electrical, handyman and more in Puerto Rico. See base prices and request service in minutes." />
-    <meta property="og:image" content="/hero.webp" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="es_PR" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" type="image/svg+xml" href="/icon.svg" />
     <link rel="apple-touch-icon" href="/icon.svg" />
@@ -25,39 +29,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="preconnect" href="https://images.unsplash.com" />
     <link rel="preload" as="image" href="/hero.webp" imagesrcset="/hero-sm.webp 543w, /hero.webp 1086w" imagesizes="(max-width: 440px) 100vw, 440px" />
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "HomeAndConstructionBusiness",
-        "name": "Torres Contractor Solution",
-        "slogan": "Tu solución rápida y confiable",
-        "telephone": "+1-939-496-4444",
-        "image": "/hero.webp",
-        "priceRange": "$$",
-        "areaServed": { "@type": "AdministrativeArea", "name": "Puerto Rico" },
-        "address": { "@type": "PostalAddress", "addressRegion": "PR", "addressCountry": "US" },
-        "hasOfferCatalog": {
-          "@type": "OfferCatalog",
-          "name": "Services",
-          "itemListElement": [
-            { "@type": "OfferCatalog", "name": "Plumbing" },
-            { "@type": "OfferCatalog", "name": "Electrical" },
-            { "@type": "OfferCatalog", "name": "Handyman" },
-            { "@type": "OfferCatalog", "name": "Painting" },
-            { "@type": "OfferCatalog", "name": "Tile" },
-            { "@type": "OfferCatalog", "name": "Pressure Washing & Roof Sealing" },
-            { "@type": "OfferCatalog", "name": "Concrete & Demolition" }
-          ]
-        }
-      }
-    </script>
+    <style>
+      /* Crawlable page content shown until the app starts (replaced on load). */
+      .ssr { max-width: 1100px; margin: 0 auto; padding: 24px 20px; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: #121212; background: #f6f3ea; }
+      .ssr nav a { margin-right: 14px; font-weight: 700; color: #121212; text-decoration: none; }
+      .ssr h1 { font-size: 34px; letter-spacing: -0.03em; margin: 22px 0 8px; }
+      .ssr h2 { font-size: 20px; margin: 28px 0 8px; }
+      .ssr p, .ssr li { line-height: 1.55; color: #3a3833; }
+      .ssr ul { padding-left: 18px; }
+      .ssr a { color: #8a6a20; }
+      .ssr img { max-width: 160px; height: auto; border-radius: 12px; margin: 4px; vertical-align: top; }
+    </style>
+    <!--ld:start-->
+    <!--ld:end-->
   </head>
   <body>
-    <div id="root"></div>
-    <noscript>
-      <h1>Torres Contractor Solution</h1>
-      <p>Plumbing, electrical, handyman, painting, tile, pressure washing, roof sealing, concrete and demolition in Puerto Rico. All prices are base prices. Minimum service $75. Call or WhatsApp 939-496-4444.</p>
-    </noscript>
+    <div id="root"><!--app--></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

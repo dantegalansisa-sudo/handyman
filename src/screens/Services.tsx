@@ -28,7 +28,7 @@ export default function Services() {
         </motion.button>
       </header>
 
-      <div style={{ position: 'sticky', top: 68, zIndex: 25, background: 'color-mix(in srgb, var(--bg) 88%, transparent)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', padding: '4px 20px 12px' }}>
+      <div className="svc-sticky" style={{ position: 'sticky', top: 68, zIndex: 25, background: 'color-mix(in srgb, var(--bg) 88%, transparent)', backdropFilter: 'blur(14px)', WebkitBackdropFilter: 'blur(14px)', padding: '4px 20px 12px' }}>
         <div className="chips" ref={chipsRef}>
           {(['all', ...CATEGORIES.map((c) => c.id)] as const).map((id) => {
             const on = cat === id
@@ -67,10 +67,10 @@ export default function Services() {
               </div>
             </div>
 
-            <div style={{ display: 'grid', gap: 10, marginTop: 16 }}>
+            <div className="svc-groups" style={{ display: 'grid', gap: 10, marginTop: 16 }}>
               {cat === 'all'
                 ? CATEGORIES.map((c) => (
-                    <div key={c.id} style={{ display: 'grid', gap: 10 }}>
+                    <div key={c.id} className="svc-group" style={{ display: 'grid', gap: 10 }}>
                       <motion.div className="row" style={{ marginTop: 14, justifyContent: 'flex-start', gap: 10 }} initial={{ opacity: 0, x: -14 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
                         <span style={{ width: 32, height: 32, borderRadius: 11, background: c.tint, display: 'grid', placeItems: 'center' }}>{CAT_ICON[c.id]({ size: 16 })}</span>
                         <span className="h3">{t(c.name)}</span>

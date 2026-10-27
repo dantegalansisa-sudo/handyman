@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, Calendar, Check, Clock, MapPin, MessageCircle, Phone, User, X } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { MIN_SERVICE, SLOTS, STR } from '../data'
+import { BUSINESS, MIN_SERVICE, SLOTS, STR } from '../data'
+import { submitRequest } from '../content'
 import { byId, isMeasured, money, qtyLabel, useApp, type Booking } from '../store'
 import { track } from '../track'
 import { MaskLine, ease } from '../components/ui'
@@ -25,7 +26,7 @@ export function bookingMessage(b: Booking, lang: 'en' | 'es') {
     const amount = isMeasured(s) ? qtyLabel(s, it.qty, lang) : `${it.qty} ×`
     return `• ${amount} ${s.name[lang]} — ${money(Math.round(s.price * it.qty * 100) / 100)}`
   })
-  const head = lang === 'es' ? `Hola Torres Contractor Solution 👋 Quiero solicitar un servicio (#${b.id}):` : `Hi Torres Contractor Solution 👋 I'd like to request a service (#${b.id}):`
+  const head = lang === 'es' ? `Hola ${BUSINESS.name} 👋 Quiero solicitar un servicio (#${b.id}):` : `Hi ${BUSINESS.name} 👋 I'd like to request a service (#${b.id}):`
   return [
     head,
     '',
@@ -93,6 +94,7 @@ function Flow({ onClose }: { onClose: () => void }) {
       total,
     }
     addBooking(b)
+    submitRequest({ ...b, lang, lines: bookingMessage(b, lang) })
     track('booking_request', { value: total, currency: 'USD', items: b.items.length })
     clearCart()
     setDone(b)

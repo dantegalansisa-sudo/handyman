@@ -1,14 +1,14 @@
 import { animate, motion, useInView, useMotionValue, useTransform, type Variants } from 'framer-motion'
 import { Droplets, Drill, PaintRoller, Grid3x3, Hammer, SprayCan, Zap, Check, Plus, Minus, Star } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
-import type { CategoryId } from '../data'
+import { BUSINESS, type CategoryId } from '../data'
 
 export const ease = [0.22, 1, 0.36, 1] as const
 
 export function Logo({ size = 40, dark = false }: { size?: number; dark?: boolean }) {
   const ink = dark ? '#fff' : '#121212'
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-label="Torres Contractor Solution">
+    <svg width={size} height={size} viewBox="0 0 64 64" aria-label={BUSINESS.name}>
       <path d="M6 29 L32 7 L58 29" fill="none" stroke="#B08A35" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M12 25 V54 H52" fill="none" stroke="#B08A35" strokeWidth="3.6" strokeLinecap="round" strokeLinejoin="round" />
       <g transform="translate(31 36)" fill={ink}>
@@ -24,10 +24,12 @@ export function Logo({ size = 40, dark = false }: { size?: number; dark?: boolea
 }
 
 export function Wordmark({ dark = false }: { dark?: boolean }) {
+  const [first, ...more] = BUSINESS.name.split(' ')
+  const rest = more.join(' ')
   return (
     <div style={{ lineHeight: 1 }}>
-      <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: '0.14em', color: '#B08A35' }}>TORRES</div>
-      <div style={{ fontWeight: 800, fontSize: 8.6, letterSpacing: '0.13em', color: dark ? '#fff' : '#121212', marginTop: 3, whiteSpace: 'nowrap' }}>CONTRACTOR SOLUTION</div>
+      <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: '0.14em', color: '#B08A35', textTransform: 'uppercase' }}>{first}</div>
+      {rest && <div style={{ fontWeight: 800, fontSize: rest.length > 12 ? 8.6 : 12.5, letterSpacing: rest.length > 12 ? '0.13em' : '0.2em', color: dark ? '#fff' : '#121212', marginTop: 3, whiteSpace: 'nowrap', textTransform: 'uppercase' }}>{rest}</div>}
     </div>
   )
 }

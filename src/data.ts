@@ -2,6 +2,8 @@ export type Lang = 'en' | 'es'
 export type T = { en: string; es: string }
 
 export const BUSINESS = {
+  /** Public site URL, set at build time (used for canonical links / sharing). */
+  url: '',
   name: 'Torres Contractor Solution',
   short: 'Torres',
   phone: '939-496-4444',
@@ -11,8 +13,8 @@ export const BUSINESS = {
   tagline: { en: 'Your fast & reliable solution', es: 'Tu solución rápida y confiable' },
 }
 
-/** Minimum charge for any visit (client-provided). */
-export const MIN_SERVICE = 75
+/** Minimum charge for any visit (client-provided). Editable in the admin panel. */
+export let MIN_SERVICE = 75
 
 const u = (id: string, w = 800, h = 600) =>
   `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&q=75&auto=format`
@@ -124,7 +126,7 @@ export const UNIT: Record<UnitKind, { per: T; short: T }> = {
 
 const noMaterials: T = { en: 'Materials not included', es: 'No incluye materiales' }
 
-export const SERVICES: Service[] = [
+export let SERVICES: Service[] = [
   // ---------- Plumbing ----------
   { id: 'toilet', cat: 'plumbing', name: { en: 'Toilet Installation', es: 'Instalación de Toilet' }, desc: { en: 'Remove the old toilet and set the new one, sealed and leak-tested.', es: 'Removemos el toilet viejo e instalamos el nuevo, sellado y probado.' }, price: 125, kind: 'each', img: IMG.toilet, popular: true },
   { id: 'bath-sink', cat: 'plumbing', name: { en: 'Bathroom Sink Installation', es: 'Instalación de Lavamanos' }, desc: { en: 'Install a new bathroom sink and connect the supply and drain.', es: 'Instalamos lavamanos nuevo y conectamos suministro y desagüe.' }, price: 100, kind: 'each', img: IMG.bathSink },
@@ -180,13 +182,18 @@ export const SERVICES: Service[] = [
 
 export const PICKUP_STORES = ['Home Depot', 'IKEA', 'Home Design', 'Berrios', 'Rooms To Go']
 
-export const FAQ: { q: T; a: T }[] = [
+export type Faq = { q: T; a: T }
+
+const defaultFaq = (): Faq[] => [
   { q: { en: 'Are these the final prices?', es: '¿Estos son los precios finales?' }, a: { en: 'All prices shown are BASE prices. The final price depends on the size and condition of the job and is confirmed with you before any work starts.', es: 'Todos los precios son precios BASE. El precio final depende del tamaño y condición del trabajo y se confirma contigo antes de comenzar.' } },
   { q: { en: 'Is there a minimum charge?', es: '¿Hay un cargo mínimo?' }, a: { en: `Yes — the minimum service is $${MIN_SERVICE}.`, es: `Sí — el servicio mínimo requerido es $${MIN_SERVICE}.` } },
   { q: { en: 'Are materials included?', es: '¿Incluyen materiales?' }, a: { en: 'Some services are labor only — they are marked “Materials not included”. We’ll confirm what’s needed when we quote your job.', es: 'Algunos servicios son solo mano de obra y están marcados “No incluye materiales”. Te confirmamos lo necesario al cotizar.' } },
   { q: { en: 'Can you pick up my order from the store?', es: '¿Pueden recoger mi pedido en la tienda?' }, a: { en: `Yes. We pick up from ${PICKUP_STORES.join(', ')} and more for $3 per mile.`, es: `Sí. Recogemos en ${PICKUP_STORES.join(', ')} y más por $3 la milla.` } },
   { q: { en: 'My job isn’t listed. Can you do it?', es: 'Mi trabajo no aparece. ¿Lo pueden hacer?' }, a: { en: 'Probably! We do more jobs that are quoted in person. Send us a photo on WhatsApp and we’ll get back to you.', es: '¡Seguramente! Hacemos más trabajos que se cotizan en persona. Envíanos una foto por WhatsApp y te respondemos.' } },
 ]
+
+export let FAQ: Faq[] = defaultFaq()
+let customFaq = false
 
 export const STR = {
   slide: { en: 'Slide to start', es: 'Desliza para empezar' },
@@ -293,6 +300,27 @@ export const STR = {
   today: { en: 'Today', es: 'Hoy' },
   cancel: { en: 'Cancel', es: 'Cancelar' },
   bookingFor: { en: 'Request', es: 'Solicitud' },
+}
+
+/** Re-derive strings that embed editable values (minimum service). */
+function refreshDerived() {
+  STR.minimumNote = { en: `Minimum service $${MIN_SERVICE}`, es: `Servicio mínimo $${MIN_SERVICE}` }
+  STR.why[3].t = { en: `$${MIN_SERVICE} minimum`, es: `Mínimo $${MIN_SERVICE}` }
+  if (!customFaq) FAQ = defaultFaq()
+}
+
+export function setMinService(n: number) {
+  MIN_SERVICE = n
+  refreshDerived()
+}
+
+export function setServices(list: Service[]) {
+  SERVICES = list
+}
+
+export function setFaq(list: Faq[] | null) {
+  customFaq = !!list?.length
+  FAQ = customFaq ? list! : defaultFaq()
 }
 
 export const SLOTS = ['8:00 – 10:00 AM', '10:00 – 12:00 PM', '12:00 – 2:00 PM', '2:00 – 4:00 PM', '4:00 – 6:00 PM']

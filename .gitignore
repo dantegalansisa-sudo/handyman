@@ -10,3 +10,8 @@ heros.png
 
 # Raw photos before processing (run npm run photos)
 portfolio-inbox/
+
+# Raw photos from the client
+fotos de proyecto realizado/
+.env
+.env.local

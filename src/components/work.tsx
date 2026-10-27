@@ -1,7 +1,8 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Calendar, Images, MapPin, MessageCircle, MoveHorizontal, X } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
-import { CATEGORIES, SERVICES, STR } from '../data'
+import { BUSINESS, CATEGORIES, SERVICES, STR } from '../data'
+import { useIsDesktop } from '../hooks'
 import { getProjects, monthLabel, orientation, tx, type Photo, type Project } from '../portfolio'
 import { useApp } from '../store'
 import { track } from '../track'
@@ -56,22 +57,23 @@ export function ProjectCard({ p, i = 0 }: { p: Project; i?: number }) {
 
 export function Masonry({ projects }: { projects: Project[] }) {
   // Two columns, balanced by photo height so vertical and horizontal shots interleave nicely.
-  const cols: Project[][] = [[], []]
-  const heights = [0, 0]
+  const n = useIsDesktop() ? 4 : 2
+  const cols: Project[][] = Array.from({ length: n }, () => [])
+  const heights = Array(n).fill(0)
   for (const p of projects) {
-    const k = heights[0] <= heights[1] ? 0 : 1
+    const k = heights.indexOf(Math.min(...heights))
     cols[k].push(p)
     heights[k] += 1 / cardRatio(p.photos[0])
   }
-  let n = 0
+  let idx = 0
   return (
-    <div className="masonry">
+    <div className="masonry" style={{ gridTemplateColumns: `repeat(${n}, 1fr)` }}>
       {cols.map((col, k) => (
         <div key={k} className="masonry-col">
           <AnimatePresence mode="popLayout">
             {col.map((p) => (
               <motion.div key={p.id} layout initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ duration: 0.4, ease }}>
-                <ProjectCard p={p} i={n++} />
+                <ProjectCard p={p} i={idx++} />
               </motion.div>
             ))}
           </AnimatePresence>
@@ -88,7 +90,7 @@ export function WorkStrip() {
   const list = (all.filter((p) => p.featured).length ? all.filter((p) => p.featured) : all).slice(0, 6)
   if (!list.length) return null
   return (
-    <section className="sec">
+    <section className="sec work-strip">
       <div className="sec-head">
         <div>
           <h2 className="h2"><MaskLine inView>{t(STR.workTitle)}</MaskLine></h2>
@@ -155,11 +157,11 @@ function ViewerBody({ p, onClose }: { p: Project; onClose: () => void }) {
 
   const goTo = (i: number) => track_.current?.scrollTo({ left: i * track_.current.clientWidth, behavior: 'smooth' })
   const msg = lang === 'es'
-    ? `Hola Torres Contractor Solution 👋 Vi el trabajo "${tx(p.title, lang)}" en su web y quiero algo similar.`
-    : `Hi Torres Contractor Solution 👋 I saw "${tx(p.title, lang)}" on your site and I'd like something similar.`
+    ? `Hola ${BUSINESS.name} 👋 Vi el trabajo "${tx(p.title, lang)}" en su web y quiero algo similar.`
+    : `Hi ${BUSINESS.name} 👋 I saw "${tx(p.title, lang)}" on your site and I'd like something similar.`
 
   return (
-    <div style={{ paddingBottom: 40 }}>
+    <div className="viewer-body">
       {/* Gallery: each photo shown whole (contain) over a blurred copy, so vertical and horizontal both fill the frame. */}
       <div className="gallery">
         <div
@@ -236,7 +238,7 @@ function ViewerBody({ p, onClose }: { p: Project; onClose: () => void }) {
             <div className="h3" style={{ marginBottom: 10 }}>{t({ en: 'Services in this job', es: 'Servicios de este trabajo' })}</div>
             <div className="card">
               {services.map((s) => (
-                <button key={s.id} className="list-row" style={{ width: '100%', textAlign: 'left' }} onClick={() => { onClose(); openSheet(s) }}>
+                <button key={s.id} className="list-row" style={{ width: '100%', textAlign: 'left' }} onClick={() => { openProject(null, true); openSheet(s) }}>
                   <span className="list-ico" style={{ background: cat.tint }}>{CAT_ICON[s.cat]({ size: 17 })}</span>
                   <span className="small" style={{ flex: 1, fontWeight: 700 }}>{t(s.name)}</span>
                   <ArrowRight size={16} color="#a39e92" />

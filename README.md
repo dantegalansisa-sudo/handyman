@@ -12,6 +12,11 @@ The flow works like Uber Eats: customers browse services with base prices, add t
 
 All catalog data lives in [`src/data.ts`](src/data.ts): services, prices, notes, FAQ and copy (EN/ES).
 
+## Admin panel, SEO and desktop
+- **Admin panel** at `/admin` (phone-first): portfolio jobs with photo upload, prices and services, requests inbox, site settings and texts. Setup: [docs/ADMIN-Y-SEO.md](docs/ADMIN-Y-SEO.md) and [supabase/schema.sql](supabase/schema.sql).
+- **SEO:** real URLs, plus `npm run build` prerenders 63 pages with meta tags and JSON-LD, `sitemap.xml` and `robots.txt` (`scripts/prerender.ts`).
+- **Desktop layout** at ≥1024px: top navigation, split hero, wide grids, centered dialogs and a footer.
+
 ## Swapping in real photos
 Photos are stock placeholders. To use the client's job photos:
 1. Put them in `public/services/` (WebP, about 900×700).
