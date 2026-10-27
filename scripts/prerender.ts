@@ -8,7 +8,6 @@
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { applyContent, fetchContent } from '../src/content'
 import { BUSINESS, CATEGORIES, FAQ, MIN_SERVICE, SERVICES, UNIT, type Service } from '../src/data'
 import { getProjects, tx } from '../src/portfolio'
 import { allPaths, metaFor, parsePath, projectPath, servicePath } from '../src/seo'
@@ -20,6 +19,16 @@ const SITE = (process.env.SITE_URL || 'https://www.torreshandymanpr.com').replac
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const abs = (p: string) => (p.startsWith('http') ? p : `${SITE}${p}`)
 const price = (s: Service) => `${s.from ? 'from ' : ''}$${s.price} ${UNIT[s.kind].per.en}`
+
+// Same Supabase config the browser build uses (Vite only loads it for the client).
+for (const f of ['.env.production', '.env.local', '.env']) {
+  try {
+    process.loadEnvFile(f)
+  } catch {
+    /* file not present */
+  }
+}
+const { applyContent, fetchContent } = await import('../src/content')
 
 // Pull the admin-edited content (if Supabase is configured) so the HTML matches the live site.
 try {
