@@ -385,3 +385,27 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
     </motion.div>
   )
 }
+
+/* ---------------- Legal links (footer, contact, checkout) ---------------- */
+export function LegalLinks({ prefix }: { prefix?: string }) {
+  const { t, go } = useApp()
+  const link = (tab: 'privacy' | 'terms', label: { en: string; es: string }) => (
+    <a
+      href={`/${tab}`}
+      className="legal-link"
+      onClick={(e) => {
+        if (e.metaKey || e.ctrlKey) return
+        e.preventDefault()
+        go(tab)
+      }}
+    >
+      {t(label)}
+    </a>
+  )
+  return (
+    <span>
+      {prefix && `${prefix} `}
+      {link('privacy', { en: 'Privacy Policy', es: 'Política de privacidad' })} · {link('terms', { en: 'Terms & Conditions', es: 'Términos y condiciones' })}
+    </span>
+  )
+}

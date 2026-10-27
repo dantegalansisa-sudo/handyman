@@ -4,12 +4,14 @@ import { MotionConfig } from 'framer-motion'
 import App from './App'
 import { applyContent, fetchContent, loadCached, saveCached } from './content'
 import { BUSINESS } from './data'
+import { initAnalytics } from './analytics'
 import './styles.css'
 
 const Admin = lazy(() => import('./admin/Admin'))
 const isAdmin = location.pathname.replace(/\/+$/, '') === '/admin'
 
 BUSINESS.url = location.origin
+if (!isAdmin) initAnalytics()
 // Show the last known admin edits immediately, then refresh in the background.
 applyContent(loadCached())
 fetchContent()

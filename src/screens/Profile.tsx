@@ -4,6 +4,7 @@ import { BUSINESS, CATEGORIES, IMG, MIN_SERVICE, PICKUP_STORES, SERVICES, STR } 
 import { useApp } from '../store'
 import { track } from '../track'
 import { CAT_ICON, Img, Logo, MaskLine, Reveal, Wordmark, ease } from '../components/ui'
+import { LegalLinks } from '../components/parts'
 import { quoteMsg, waLink } from './Home'
 
 export default function Profile() {
@@ -93,6 +94,8 @@ export default function Profile() {
           {t({ en: 'More jobs are quoted in person — just ask.', es: 'Hay más trabajos que se cotizan en persona — pregúntanos.' })}
           <br />
           {t({ en: 'Tip: add this app to your home screen for one-tap booking.', es: 'Tip: agrega esta app a tu pantalla de inicio para reservar con un toque.' })}
+          <br />
+          <LegalLinks />
         </div>
       </div>
     </div>

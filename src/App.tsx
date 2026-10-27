@@ -12,10 +12,11 @@ import Checkout from './screens/Checkout'
 import Bookings from './screens/Bookings'
 import Profile from './screens/Profile'
 import Work from './screens/Work'
+import Legal from './screens/Legal'
 import { ProjectViewer } from './components/work'
 
-const SCREENS: Record<Tab, () => JSX.Element> = { home: Home, services: Services, work: Work, cart: Cart, bookings: Bookings, profile: Profile }
-const ORDER: Tab[] = ['home', 'services', 'work', 'cart', 'bookings', 'profile']
+const SCREENS: Record<Tab, () => JSX.Element> = { home: Home, services: Services, work: Work, cart: Cart, bookings: Bookings, profile: Profile, privacy: Legal, terms: Legal }
+const ORDER: Tab[] = ['home', 'services', 'work', 'cart', 'bookings', 'profile', 'privacy', 'terms']
 
 function seenOnboarding() {
   try {

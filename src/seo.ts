@@ -4,12 +4,14 @@
  */
 import { BUSINESS, CATEGORIES, MIN_SERVICE, SERVICES, UNIT, type CategoryId, type Service } from './data'
 import { getProjects, tx, type Project } from './portfolio'
+import { privacy, terms } from './legal'
+import { pageView } from './analytics'
 
-export type Tab = 'home' | 'services' | 'work' | 'cart' | 'bookings' | 'profile'
+export type Tab = 'home' | 'services' | 'work' | 'cart' | 'bookings' | 'profile' | 'privacy' | 'terms'
 
 export type Route = { tab: Tab; cat?: CategoryId | 'all'; serviceId?: string; projectId?: string; admin?: boolean }
 
-const TAB_PATH: Record<Tab, string> = { home: '/', services: '/services', work: '/work', cart: '/estimate', bookings: '/requests', profile: '/contact' }
+const TAB_PATH: Record<Tab, string> = { home: '/', services: '/services', work: '/work', cart: '/estimate', bookings: '/requests', profile: '/contact', privacy: '/privacy', terms: '/terms' }
 
 const isCat = (s: string | undefined): s is CategoryId => !!s && CATEGORIES.some((c) => c.id === s)
 
@@ -23,6 +25,8 @@ export function parsePath(pathname: string): Route {
     case 'estimate': return { tab: 'cart' }
     case 'requests': return { tab: 'bookings' }
     case 'contact': return { tab: 'profile' }
+    case 'privacy': return { tab: 'privacy' }
+    case 'terms': return { tab: 'terms' }
     default: return { tab: 'home' }
   }
 }
@@ -90,6 +94,10 @@ export function metaFor(pathname: string): Meta {
   if (r.tab === 'profile') {
     return { title: `Contact — Contacto | ${brand()}`, description: clip(`Call or WhatsApp ${BUSINESS.phone}. ${brand()} — ${BUSINESS.tagline.en}. Serving ${where}.`), path, image: img }
   }
+  if (r.tab === 'privacy' || r.tab === 'terms') {
+    const d = r.tab === 'privacy' ? privacy() : terms()
+    return { title: `${d.title.en} — ${d.title.es} | ${brand()}`, description: clip(d.intro.en), path, image: img }
+  }
   if (r.tab === 'cart' || r.tab === 'bookings') {
     return { title: `${r.tab === 'cart' ? 'Your estimate' : 'My requests'} | ${brand()}`, description: '', path, image: img, noindex: true }
   }
@@ -110,6 +118,8 @@ export function allPaths(): string[] {
     '/work',
     ...getProjects().map(projectPath),
     '/contact',
+    '/privacy',
+    '/terms',
   ]
 }
 
@@ -137,4 +147,5 @@ export function applyMeta(pathname: string) {
   set('meta[property="og:url"]', 'content', abs(m.path))
   set('meta[property="og:image"]', 'content', abs(m.image))
   set('meta[name="robots"]', 'content', m.noindex ? 'noindex, nofollow' : 'index, follow')
+  pageView(m.path, m.title)
 }

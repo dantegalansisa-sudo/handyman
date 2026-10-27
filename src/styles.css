@@ -586,3 +586,12 @@ textarea.input { height: 96px; padding: 14px 18px; resize: none; }
   .dk-phone { display: none; }
   .dk-hero-title { font-size: 56px !important; }
 }
+
+/* ---------- Legal pages ---------- */
+.legal { max-width: 760px; }
+.legal-intro { font-size: 15.5px; line-height: 1.65; color: var(--ink-2); margin: 18px 0 8px; }
+.legal h2 { font-size: 18px; letter-spacing: -0.015em; margin: 28px 0 8px; }
+.legal p { font-size: 14.5px; line-height: 1.7; color: var(--ink-2); margin: 0 0 10px; }
+.legal-link { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.is-desktop .legal { margin: 0 auto; }
+.dk-foot-bottom .legal-link { color: #bdb6a4; }

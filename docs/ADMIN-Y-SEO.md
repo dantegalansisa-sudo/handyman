@@ -41,6 +41,28 @@ Los cambios salen en la web apenas se guardan. Lo que no se puede tocar desde el
 ### Después de publicar con el dominio final
 1. Abre [Google Search Console](https://search.google.com/search-console), agrega el dominio y envía `https://<dominio>/sitemap.xml`.
 2. Crea el **Perfil de Empresa en Google** (Google Business Profile) con el mismo nombre, teléfono y link. En el SEO local, eso pesa tanto como la web.
-3. En Google Ads, instala la etiqueta (o GTM) en `index.html` y marca como conversión `booking_request`, `whatsapp_click` y `call_click`.
+3. Activa **Google Analytics 4 / Google Ads** (sección 4).
+
+## 4. Google Analytics y Google Ads
+El código ya está instalado. Solo falta poner los IDs en [`.env.production`](../.env.production) y publicar:
+
+| Variable | Dónde se saca | Ejemplo |
+|---|---|---|
+| `VITE_GA_ID` | Analytics → Administrar → Flujos de datos → Web → *ID de medición* | `G-AB12CD34EF` |
+| `VITE_GADS_ID` | Google Ads → Herramientas → Conversiones → etiqueta, *ID de conversión* | `AW-1234567890` |
+| `VITE_GADS_LEAD_LABEL` | La *etiqueta* de la conversión "Solicitud enviada" | `AbC-dEfGhIj` |
+| `VITE_GADS_CONTACT_LABEL` | La *etiqueta* de la conversión "WhatsApp / llamada" | `KlM-nOpQrSt` |
+
+Lo que registra la web:
+- **Visitas** de cada página, incluido cada servicio y cada trabajo.
+- **Eventos:** `add_to_estimate` (agregó un servicio), `begin_booking` (empezó a reservar), `booking_request` (envió la solicitud, con el total), `whatsapp_click` y `call_click`.
+
+**Recomendación:** en GA4 marca `booking_request`, `whatsapp_click` y `call_click` como *eventos clave*. Luego vincula GA4 con Google Ads, o usa las etiquetas de la tabla, para que Ads optimice los anuncios por clientes reales.
+
+## 5. Páginas legales
+- `/privacy`: Política de privacidad.
+- `/terms`: Términos y condiciones.
+
+Están en español e inglés, enlazadas en el pie de página, en Contacto y en la confirmación de la reserva. El texto vive en `src/legal.ts`. Es un texto estándar hecho a la medida de cómo funciona la web; si el negocio crece, conviene que lo revise un abogado.
 
 **Nota:** el HTML para Google se genera en cada publicación. Los cambios del panel salen en la web de inmediato, pero Google ve las páginas nuevas (por ejemplo, un trabajo nuevo) después del siguiente *Redeploy*.

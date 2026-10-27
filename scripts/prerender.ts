@@ -11,6 +11,7 @@ import path from 'node:path'
 import { BUSINESS, CATEGORIES, FAQ, MIN_SERVICE, SERVICES, UNIT, type Service } from '../src/data'
 import { getProjects, tx } from '../src/portfolio'
 import { allPaths, metaFor, parsePath, projectPath, servicePath } from '../src/seo'
+import { privacy, terms } from '../src/legal'
 
 const DIST = 'dist'
 /** Production domain. Override with SITE_URL (e.g. for a staging build). */
@@ -73,6 +74,7 @@ const crumbs = (items: [string, string][]) => ({
 })
 
 const nav = `<nav><a href="/">Home</a><a href="/services">Services · Servicios</a><a href="/work">Our work · Trabajos</a><a href="/contact">Contact · Contacto</a></nav>`
+const legalLinks = `<p><a href="/privacy">Privacy Policy · Política de privacidad</a> · <a href="/terms">Terms · Términos</a></p>`
 const serviceLi = (s: Service) => `<li><a href="${servicePath(s)}">${esc(s.name.en)} — ${esc(s.name.es)}</a>: ${esc(price(s))}</li>`
 const contact = `<p>Call or WhatsApp <a href="${BUSINESS.phoneHref}">${esc(BUSINESS.phone)}</a>. All prices are base prices · Todos los precios son precios base. Minimum service $${MIN_SERVICE}.</p>`
 
@@ -138,6 +140,11 @@ ${x.services?.length ? `<h2>Services in this job</h2><ul>${x.services.map((id) =
       ld: [crumbs([['Home', '/'], ['Our work', p]])],
     }
   }
+  if (r.tab === 'privacy' || r.tab === 'terms') {
+    const d = r.tab === 'privacy' ? privacy() : terms()
+    const lang = (l: 'en' | 'es') => `<h2>${esc(d.title[l])}</h2><p>${esc(d.updated[l])}</p><p>${esc(d.intro[l])}</p>${d.sections.map((s) => `<h3>${esc(s.h[l])}</h3>${s.p.map((x) => `<p>${esc(x[l])}</p>`).join('')}`).join('')}`
+    return { html: `${nav}<h1>${esc(d.title.en)} · ${esc(d.title.es)}</h1>${lang('en')}${lang('es')}`, ld: [crumbs([['Home', '/'], [d.title.en, p]])] }
+  }
   if (r.tab === 'profile') {
     return { html: `${nav}<h1>Contact ${esc(BUSINESS.name)}</h1><p>${esc(BUSINESS.tagline.en)} · ${esc(BUSINESS.tagline.es)}</p>${contact}`, ld: [crumbs([['Home', '/'], ['Contact', p]])] }
   }
@@ -178,7 +185,7 @@ function render(p: string) {
   return template
     .replace(/<!--seo:start-->[\s\S]*?<!--seo:end-->/, head)
     .replace(/<!--ld:start-->[\s\S]*?<!--ld:end-->/, scripts)
-    .replace('<!--app-->', `<div class="ssr">${html}</div>`)
+    .replace('<!--app-->', `<div class="ssr">${html}${legalLinks}</div>`)
 }
 
 const paths = allPaths()

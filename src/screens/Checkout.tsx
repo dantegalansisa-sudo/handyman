@@ -6,6 +6,7 @@ import { submitRequest } from '../content'
 import { byId, isMeasured, money, qtyLabel, useApp, type Booking } from '../store'
 import { track } from '../track'
 import { MaskLine, ease } from '../components/ui'
+import { LegalLinks } from '../components/parts'
 import { waLink } from './Home'
 
 function nextDays(n: number) {
@@ -220,7 +221,7 @@ function Flow({ onClose }: { onClose: () => void }) {
                   )
                 })}
               </div>
-              <div className="xs muted" style={{ marginTop: 12, lineHeight: 1.5 }}>{t(STR.payLater)}. {t({ en: 'You can cancel anytime.', es: 'Puedes cancelar cuando quieras.' })}</div>
+              <div className="xs muted" style={{ marginTop: 12, lineHeight: 1.5 }}>{t(STR.payLater)}. {t({ en: 'You can cancel anytime.', es: 'Puedes cancelar cuando quieras.' })}<br /><LegalLinks prefix={t({ en: 'By sending you accept our', es: 'Al enviar aceptas nuestra' })} /></div>
             </>
           )}
         </motion.div>
