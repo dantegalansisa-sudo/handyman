@@ -7,6 +7,7 @@ import { track } from '../track'
 import { BeforeAfter, LegalLinks, ServiceRow } from '../components/parts'
 import { WorkStrip } from '../components/work'
 import { DesktopHero } from '../components/desktop'
+import { CinematicPromo } from '../components/cinematic'
 import { useIsDesktop } from '../hooks'
 import { CAT_ICON, CountUp, Img, Logo, MaskLine, Reveal, ease } from '../components/ui'
 
@@ -22,10 +23,6 @@ export default function Home() {
   const desktop = useIsDesktop()
   const [q, setQ] = useState('')
   const [chip, setChip] = useState<CategoryId | 'all'>('all')
-  const promoRef = useRef<HTMLDivElement>(null)
-  const { scrollYProgress } = useScroll({ target: promoRef, offset: ['start end', 'end start'] })
-  const promoY = useTransform(scrollYProgress, [0, 1], ['-8%', '10%'])
-  const promoScale = useTransform(scrollYProgress, [0, 0.5, 1], [1.12, 1.02, 1.08])
 
   const results = useMemo(() => {
     const s = q.trim().toLowerCase()
@@ -101,20 +98,8 @@ export default function Home() {
                 })}
               </motion.div>
 
-              {/* Promo card */}
-              <motion.div ref={promoRef} className="promo mobile-only" style={{ marginTop: 18 }} initial={{ opacity: 0, y: 30, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} transition={{ delay: 0.45, duration: 0.9, ease }}>
-                <motion.img className="ph" src={IMG.pro} alt="" style={{ y: promoY, scale: promoScale }} />
-                <div style={{ position: 'relative' }}>
-                  <span className="pill"><BadgeDollarSign size={14} color="#B08A35" /> {t(STR.promoTag)}</span>
-                </div>
-                <div style={{ position: 'relative', marginTop: 'auto', maxWidth: '60%' }}>
-                  <div className="h2" style={{ fontSize: 21 }}>{t(STR.promoTitle)}</div>
-                  <motion.button className="btn" style={{ marginTop: 16, height: 50, paddingRight: 20 }} whileTap={{ scale: 0.95 }} onClick={() => go('services', 'all')}>
-                    {t(STR.bookNow)}
-                    <span className="btn-arrow" style={{ width: 34, height: 34, marginRight: -10 }}><ArrowRight size={16} /></span>
-                  </motion.button>
-                </div>
-              </motion.div>
+              {/* Cinematic promo (no photo) */}
+              <CinematicPromo />
 
               {/* Marquee */}
               <div className="marquee" style={{ marginTop: 18 }}>
