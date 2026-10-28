@@ -47,7 +47,7 @@ export const IMG = {
   // electrical
   electrical: u('1732660780054-0cf9fadb9d30'),
   outlet: u('1758101755915-462eddc23f57'),
-  spotlight: u('1705909944158-5325de9bb3a7'),
+  spotlight: '/services/spotlight.webp', // client photo
   fixture: u('1554995207-c18c203602cb'),
   fan: u('1762529716272-b316f61502e7'),
   conduit: u('1768321913920-d3ac011e0683'),
@@ -73,15 +73,15 @@ export const IMG = {
   paintOut: u('1759406066673-f76869a4e6db'),
   // tile
   tile: u('1656646523907-97b094c7e63a'),
-  tileFloor: u('1731185752376-a4cf3e8556fa'),
-  tileWall: u('1566446896748-6075a87760c1'),
+  tileFloor: '/services/tile-floor.webp', // client photo
+  tileWall: '/services/tile-wall.webp', // client photo
   // washing & roofs
   washing: u('1718152423993-a29048dbc223'),
   washing2: u('1718152521364-b9655b8a7926'),
   roof: u('1674485169641-bcb2bf6f1df9'),
   // concrete & demolition
   concrete: u('1774516534097-76eb46de7229'),
-  demo: u('1601003768474-4af9fea86fa2'),
+  demo: '/services/demolition.webp', // client photo
 }
 
 export type CategoryId = 'plumbing' | 'electrical' | 'handyman' | 'painting' | 'tile' | 'washing' | 'concrete'
