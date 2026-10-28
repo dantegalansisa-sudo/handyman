@@ -7,7 +7,7 @@ import { tabPath } from '../seo'
 import { track } from '../track'
 import { quoteMsg, waLink } from '../screens/Home'
 import { Logo, MaskLine, Wordmark, ease } from './ui'
-import { LegalLinks } from './parts'
+import { DeveloperCredit, LegalLinks } from './parts'
 
 const LINKS: { tab: Tab; label: { en: string; es: string } }[] = [
   { tab: 'home', label: STR.home },
@@ -97,7 +97,8 @@ export function DesktopFooter() {
         </div>
       </div>
       <div className="dk-foot-bottom">
-        © {new Date().getFullYear()} {BUSINESS.name} · {t({ en: 'All prices are base prices.', es: 'Todos los precios son precios base.' })} · <LegalLinks />
+        <span>© {new Date().getFullYear()} {BUSINESS.name} · {t({ en: 'All prices are base prices.', es: 'Todos los precios son precios base.' })} · <LegalLinks /></span>
+        <DeveloperCredit dark />
       </div>
     </footer>
   )

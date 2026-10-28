@@ -4,14 +4,14 @@
  */
 import { BUSINESS, CATEGORIES, MIN_SERVICE, SERVICES, UNIT, type CategoryId, type Service } from './data'
 import { getProjects, tx, type Project } from './portfolio'
-import { privacy, terms } from './legal'
+import { isLegal, legalDoc } from './legal'
 import { pageView } from './analytics'
 
-export type Tab = 'home' | 'services' | 'work' | 'cart' | 'bookings' | 'profile' | 'privacy' | 'terms'
+export type Tab = 'home' | 'services' | 'work' | 'cart' | 'bookings' | 'profile' | 'privacy' | 'terms' | 'accessibility'
 
 export type Route = { tab: Tab; cat?: CategoryId | 'all'; serviceId?: string; projectId?: string; admin?: boolean }
 
-const TAB_PATH: Record<Tab, string> = { home: '/', services: '/services', work: '/work', cart: '/estimate', bookings: '/requests', profile: '/contact', privacy: '/privacy', terms: '/terms' }
+const TAB_PATH: Record<Tab, string> = { home: '/', services: '/services', work: '/work', cart: '/estimate', bookings: '/requests', profile: '/contact', privacy: '/privacy', terms: '/terms', accessibility: '/accessibility' }
 
 const isCat = (s: string | undefined): s is CategoryId => !!s && CATEGORIES.some((c) => c.id === s)
 
@@ -27,6 +27,7 @@ export function parsePath(pathname: string): Route {
     case 'contact': return { tab: 'profile' }
     case 'privacy': return { tab: 'privacy' }
     case 'terms': return { tab: 'terms' }
+    case 'accessibility': return { tab: 'accessibility' }
     default: return { tab: 'home' }
   }
 }
@@ -94,8 +95,8 @@ export function metaFor(pathname: string): Meta {
   if (r.tab === 'profile') {
     return { title: `Contact — Contacto | ${brand()}`, description: clip(`Call or WhatsApp ${BUSINESS.phone}. ${brand()} — ${BUSINESS.tagline.en}. Serving ${where}.`), path, image: img }
   }
-  if (r.tab === 'privacy' || r.tab === 'terms') {
-    const d = r.tab === 'privacy' ? privacy() : terms()
+  if (isLegal(r.tab)) {
+    const d = legalDoc(r.tab)
     return { title: `${d.title.en} — ${d.title.es} | ${brand()}`, description: clip(d.intro.en), path, image: img }
   }
   if (r.tab === 'cart' || r.tab === 'bookings') {
@@ -120,6 +121,7 @@ export function allPaths(): string[] {
     '/contact',
     '/privacy',
     '/terms',
+    '/accessibility',
   ]
 }
 

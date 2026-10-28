@@ -7,7 +7,49 @@ import { BUSINESS, MIN_SERVICE, type T } from './data'
 
 export type LegalDoc = { title: T; updated: T; intro: T; sections: { h: T; p: T[] }[] }
 
-const UPDATED: T = { en: 'Last updated: October 27, 2026', es: 'Última actualización: 27 de octubre de 2026' }
+const UPDATED: T = { en: 'Last updated: October 28, 2026', es: 'Última actualización: 28 de octubre de 2026' }
+
+export type LegalTab = 'privacy' | 'terms' | 'accessibility'
+export const LEGAL_TABS: LegalTab[] = ['privacy', 'terms', 'accessibility']
+export const isLegal = (tab: string): tab is LegalTab => (LEGAL_TABS as string[]).includes(tab)
+export const legalDoc = (tab: LegalTab): LegalDoc => (tab === 'terms' ? terms() : tab === 'accessibility' ? accessibility() : privacy())
+
+/** Agency credit shown in the footer. */
+export const DEVELOPER = {
+  name: 'NEXIX Tech Studio',
+  url: 'https://www.nexixtechstudio.com/?utm_source=torreshandymanpr&utm_medium=referral&utm_campaign=footer_credit',
+}
+
+export function accessibility(): LegalDoc {
+  const n = BUSINESS.name
+  const ph = BUSINESS.phone
+  return {
+    title: { en: 'Accessibility Statement', es: 'Declaración de accesibilidad' },
+    updated: UPDATED,
+    intro: {
+      en: `${n} wants everyone, including people with disabilities, to be able to use this website and request our services.`,
+      es: `${n} quiere que todas las personas, incluidas las personas con discapacidad, puedan usar este sitio web y solicitar nuestros servicios.`,
+    },
+    sections: [
+      {
+        h: { en: 'Our goal', es: 'Nuestra meta' },
+        p: [{ en: 'We aim to meet the Web Content Accessibility Guidelines (WCAG) 2.1 Level AA, the standard commonly used under the Americans with Disabilities Act (ADA).', es: 'Buscamos cumplir con las Pautas de Accesibilidad para el Contenido Web (WCAG) 2.1 nivel AA, el estándar que se usa comúnmente bajo la Ley de Estadounidenses con Discapacidades (ADA).' }],
+      },
+      {
+        h: { en: 'What we do', es: 'Lo que hacemos' },
+        p: [
+          { en: 'Text descriptions for images, labeled forms and buttons, readable color contrast, pages that can be zoomed, and support for keyboard navigation.', es: 'Descripciones de texto para las imágenes, formularios y botones con etiquetas, contraste de color legible, páginas que se pueden ampliar y navegación con teclado.' },
+          { en: 'Animations respect your device’s “reduce motion” setting.', es: 'Las animaciones respetan la opción “reducir movimiento” de tu dispositivo.' },
+          { en: 'The site is available in English and Spanish.', es: 'El sitio está disponible en inglés y español.' },
+        ],
+      },
+      {
+        h: { en: 'Need help or found a problem?', es: '¿Necesitas ayuda o encontraste un problema?' },
+        p: [{ en: `If any part of this site is hard to use, call or WhatsApp us at ${ph}. We will help you request the service another way and work to fix the issue.`, es: `Si alguna parte del sitio es difícil de usar, llámanos o escríbenos por WhatsApp al ${ph}. Te ayudaremos a solicitar el servicio de otra forma y trabajaremos para corregir el problema.` }],
+      },
+    ],
+  }
+}
 
 export function privacy(): LegalDoc {
   const n = BUSINESS.name
@@ -65,12 +107,23 @@ export function privacy(): LegalDoc {
         p: [{ en: `You can ask us to see, correct or delete the information you sent us by calling or writing on WhatsApp to ${ph}.`, es: `Puedes pedirnos ver, corregir o borrar la información que nos enviaste llamando o escribiendo por WhatsApp al ${ph}.` }],
       },
       {
+        h: { en: 'Calls, texts and WhatsApp', es: 'Llamadas, textos y WhatsApp' },
+        p: [
+          { en: 'When you send a request, you agree that we may call, text or WhatsApp you at the number you gave us about that request (quote, scheduling and follow-up). Message and data rates may apply.', es: 'Al enviar una solicitud, aceptas que te llamemos, te enviemos textos o te escribamos por WhatsApp al número que nos diste sobre esa solicitud (cotización, cita y seguimiento). Pueden aplicar cargos de mensajes y datos.' },
+          { en: 'We do not send marketing texts without your separate consent. You can tell us to stop at any time by replying STOP or telling us on the call or chat.', es: 'No enviamos textos promocionales sin tu consentimiento por separado. Puedes pedirnos que paremos en cualquier momento respondiendo STOP o diciéndonoslo en la llamada o el chat.' },
+        ],
+      },
+      {
+        h: { en: 'Do Not Track', es: 'Señal “Do Not Track”' },
+        p: [{ en: 'Some browsers send a “Do Not Track” (DNT) signal. There is no common industry standard for it, so this site does not change its behavior when it receives one. You can still block or delete cookies in your browser and opt out of Google Analytics as described above.', es: 'Algunos navegadores envían una señal “Do Not Track” (DNT). Como no existe un estándar común en la industria, este sitio no cambia su funcionamiento al recibirla. Aun así puedes bloquear o borrar cookies en tu navegador y desactivar Google Analytics como se explica arriba.' }],
+      },
+      {
         h: { en: 'Children', es: 'Menores de edad' },
         p: [{ en: 'This site is meant for adults requesting home services. We do not knowingly collect information from children under 13.', es: 'Este sitio es para adultos que solicitan servicios para el hogar. No recopilamos a sabiendas información de menores de 13 años.' }],
       },
       {
         h: { en: 'Changes and contact', es: 'Cambios y contacto' },
-        p: [{ en: `We may update this policy; the date above shows the latest version. Questions: ${n}, ${ph} (phone or WhatsApp), Puerto Rico.`, es: `Podemos actualizar esta política; la fecha de arriba indica la versión más reciente. Preguntas: ${n}, ${ph} (teléfono o WhatsApp), Puerto Rico.` }],
+        p: [{ en: `We may update this policy. When we do, we will change the date at the top of this page; important changes will also be noted on the website. Questions: ${n}, ${ph} (phone or WhatsApp), Puerto Rico.`, es: `Podemos actualizar esta política. Cuando lo hagamos, cambiaremos la fecha al inicio de esta página; los cambios importantes también se indicarán en el sitio web. Preguntas: ${n}, ${ph} (teléfono o WhatsApp), Puerto Rico.` }],
       },
     ],
   }
@@ -102,6 +155,7 @@ export function terms(): LegalDoc {
           { en: 'Sending a request through the site does not guarantee an appointment. A request is confirmed only when we contact you and agree on the price, date and time.', es: 'Enviar una solicitud por el sitio no garantiza una cita. La solicitud queda confirmada solo cuando te contactamos y acordamos el precio, la fecha y la hora.' },
           { en: 'Please give accurate information and let us know as soon as possible if you need to change or cancel.', es: 'Por favor da información correcta y avísanos lo antes posible si necesitas cambiar o cancelar.' },
           { en: 'Jobs not listed on the site are quoted in person.', es: 'Los trabajos que no aparecen en el sitio se cotizan en persona.' },
+          { en: 'By sending a request you agree to be contacted by phone, text or WhatsApp about it, as described in our Privacy Policy.', es: 'Al enviar una solicitud aceptas que te contactemos por teléfono, texto o WhatsApp sobre ella, como se explica en la Política de privacidad.' },
         ],
       },
       {

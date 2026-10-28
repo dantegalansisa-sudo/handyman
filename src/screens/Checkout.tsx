@@ -221,7 +221,12 @@ function Flow({ onClose }: { onClose: () => void }) {
                   )
                 })}
               </div>
-              <div className="xs muted" style={{ marginTop: 12, lineHeight: 1.5 }}>{t(STR.payLater)}. {t({ en: 'You can cancel anytime.', es: 'Puedes cancelar cuando quieras.' })}<br /><LegalLinks prefix={t({ en: 'By sending you accept our', es: 'Al enviar aceptas nuestra' })} /></div>
+              <div className="xs muted" style={{ marginTop: 12, lineHeight: 1.5 }}>{t(STR.payLater)}. {t({ en: 'You can cancel anytime.', es: 'Puedes cancelar cuando quieras.' })}<br />
+                {t({
+                  en: `By sending, you agree that ${BUSINESS.name} may call, text or WhatsApp you at the number above about this request. Message and data rates may apply.`,
+                  es: `Al enviar, aceptas que ${BUSINESS.name} te llame, te envíe textos o te escriba por WhatsApp al número de arriba sobre esta solicitud. Pueden aplicar cargos de mensajes y datos.`,
+                })}{' '}
+                <LegalLinks prefix={t({ en: 'You also accept our', es: 'También aceptas nuestra' })} /></div>
             </>
           )}
         </motion.div>

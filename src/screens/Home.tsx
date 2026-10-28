@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from 'react'
 import { BUSINESS, CATEGORIES, FAQ, IMG, MIN_SERVICE, PICKUP_STORES, SERVICES, STR, UNIT, type CategoryId } from '../data'
 import { money, useApp } from '../store'
 import { track } from '../track'
-import { BeforeAfter, LegalLinks, ServiceRow } from '../components/parts'
+import { BeforeAfter, DeveloperCredit, LegalLinks, ServiceRow } from '../components/parts'
 import { WorkStrip } from '../components/work'
 import { DesktopHero } from '../components/desktop'
 import { CinematicPromo } from '../components/cinematic'
@@ -263,6 +263,7 @@ export default function Home() {
                 <div className="xs muted" style={{ marginTop: 4 }}>© {new Date().getFullYear()} {BUSINESS.name} · {BUSINESS.phone}</div>
                 <div className="xs muted" style={{ marginTop: 4 }}>{t({ en: 'All prices are base prices.', es: 'Todos los precios son precios base.' })}</div>
                 <div className="xs muted" style={{ marginTop: 10 }}><LegalLinks /></div>
+                <div style={{ marginTop: 14 }}><DeveloperCredit /></div>
               </footer>
             </motion.div>
           )}

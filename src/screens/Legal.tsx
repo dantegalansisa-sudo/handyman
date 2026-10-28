@@ -1,13 +1,13 @@
 import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
-import { privacy, terms } from '../legal'
+import { LEGAL_TABS, isLegal, legalDoc } from '../legal'
 import { useApp } from '../store'
 import { MaskLine, ease } from '../components/ui'
 
 export default function Legal() {
   const { t, tab, go } = useApp()
-  const doc = tab === 'terms' ? terms() : privacy()
-  const other = tab === 'terms' ? 'privacy' : 'terms'
+  const current = isLegal(tab) ? tab : 'privacy'
+  const doc = legalDoc(current)
   return (
     <div>
       <header className="topbar">
@@ -25,9 +25,13 @@ export default function Legal() {
             {s.p.map((p, k) => <p key={k}>{t(p)}</p>)}
           </section>
         ))}
-        <button className="link" style={{ marginTop: 24 }} onClick={() => go(other)}>
-          {t(other === 'terms' ? terms().title : privacy().title)} →
-        </button>
+        <div style={{ display: 'grid', gap: 6, marginTop: 24 }}>
+          {LEGAL_TABS.filter((x) => x !== current).map((x) => (
+            <button key={x} className="link" style={{ textAlign: 'left' }} onClick={() => go(x)}>
+              {t(legalDoc(x).title)} →
+            </button>
+          ))}
+        </div>
       </article>
     </div>
   )

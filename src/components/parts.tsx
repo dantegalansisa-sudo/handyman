@@ -3,6 +3,7 @@ import { ArrowRight, BadgeDollarSign, Check, ChevronsRight, ClipboardList, House
 import { useRef, useState } from 'react'
 import { BUSINESS, CATEGORIES, IMG, SERVICES, STR, UNIT, type Service } from '../data'
 import { track } from '../track'
+import { DEVELOPER, type LegalTab } from '../legal'
 import { defaultQty, isMeasured, money, priceLabel, qtyLabel, stepOf, useApp, type Tab } from '../store'
 import { AddButton, AnimatedNumber, CheckDot, Img, Logo, MaskLine, Stepper, Wordmark, ease } from './ui'
 
@@ -387,9 +388,9 @@ export function Onboarding({ onDone }: { onDone: () => void }) {
 }
 
 /* ---------------- Legal links (footer, contact, checkout) ---------------- */
-export function LegalLinks({ prefix }: { prefix?: string }) {
+export function LegalLinks({ prefix, full = !prefix }: { prefix?: string; full?: boolean }) {
   const { t, go } = useApp()
-  const link = (tab: 'privacy' | 'terms', label: { en: string; es: string }) => (
+  const link = (tab: LegalTab, label: { en: string; es: string }) => (
     <a
       href={`/${tab}`}
       className="legal-link"
@@ -406,6 +407,17 @@ export function LegalLinks({ prefix }: { prefix?: string }) {
     <span>
       {prefix && `${prefix} `}
       {link('privacy', { en: 'Privacy Policy', es: 'Política de privacidad' })} · {link('terms', { en: 'Terms & Conditions', es: 'Términos y condiciones' })}
+      {full && <> · {link('accessibility', { en: 'Accessibility', es: 'Accesibilidad' })}</>}
     </span>
+  )
+}
+
+/* ---------------- Agency credit ---------------- */
+export function DeveloperCredit({ dark = false }: { dark?: boolean }) {
+  const { t } = useApp()
+  return (
+    <a className={`dev-credit ${dark ? 'dark' : ''}`} href={DEVELOPER.url} target="_blank" rel="noopener">
+      {t({ en: 'Website developed by', es: 'Desarrollado por' })} <b>{DEVELOPER.name}</b>
+    </a>
   )
 }

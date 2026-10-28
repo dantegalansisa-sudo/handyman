@@ -11,7 +11,7 @@ import path from 'node:path'
 import { BUSINESS, CATEGORIES, FAQ, MIN_SERVICE, SERVICES, UNIT, type Service } from '../src/data'
 import { getProjects, tx } from '../src/portfolio'
 import { allPaths, metaFor, parsePath, projectPath, servicePath } from '../src/seo'
-import { privacy, terms } from '../src/legal'
+import { DEVELOPER, isLegal, legalDoc } from '../src/legal'
 
 const DIST = 'dist'
 /** Production domain. Override with SITE_URL (e.g. for a staging build). */
@@ -74,7 +74,7 @@ const crumbs = (items: [string, string][]) => ({
 })
 
 const nav = `<nav><a href="/">Home</a><a href="/services">Services · Servicios</a><a href="/work">Our work · Trabajos</a><a href="/contact">Contact · Contacto</a></nav>`
-const legalLinks = `<p><a href="/privacy">Privacy Policy · Política de privacidad</a> · <a href="/terms">Terms · Términos</a></p>`
+const legalLinks = `<p><a href="/privacy">Privacy Policy · Política de privacidad</a> · <a href="/terms">Terms · Términos</a> · <a href="/accessibility">Accessibility · Accesibilidad</a></p><p>Website developed by <a href="${DEVELOPER.url}" target="_blank" rel="noopener">${DEVELOPER.name}</a></p>`
 const serviceLi = (s: Service) => `<li><a href="${servicePath(s)}">${esc(s.name.en)} — ${esc(s.name.es)}</a>: ${esc(price(s))}</li>`
 const contact = `<p>Call or WhatsApp <a href="${BUSINESS.phoneHref}">${esc(BUSINESS.phone)}</a>. All prices are base prices · Todos los precios son precios base. Minimum service $${MIN_SERVICE}.</p>`
 
@@ -140,8 +140,8 @@ ${x.services?.length ? `<h2>Services in this job</h2><ul>${x.services.map((id) =
       ld: [crumbs([['Home', '/'], ['Our work', p]])],
     }
   }
-  if (r.tab === 'privacy' || r.tab === 'terms') {
-    const d = r.tab === 'privacy' ? privacy() : terms()
+  if (isLegal(r.tab)) {
+    const d = legalDoc(r.tab)
     const lang = (l: 'en' | 'es') => `<h2>${esc(d.title[l])}</h2><p>${esc(d.updated[l])}</p><p>${esc(d.intro[l])}</p>${d.sections.map((s) => `<h3>${esc(s.h[l])}</h3>${s.p.map((x) => `<p>${esc(x[l])}</p>`).join('')}`).join('')}`
     return { html: `${nav}<h1>${esc(d.title.en)} · ${esc(d.title.es)}</h1>${lang('en')}${lang('es')}`, ld: [crumbs([['Home', '/'], [d.title.en, p]])] }
   }
